@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{username}} Account</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class='transactions_made'>
+        <ul>
+            {% for t in transactions %}
+            <li><p>{{t.retailer}}: ${{t.amount}} - {{t.date}} - {{t.category}}</p></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <p>Food: {{categories.Food}}%</p>
+    <p>Transportation: {{categories.Transportation}}%</p>
+    <p>Clothing: {{categories.Clothing}}%</p>
+    <p>Utilities: {{categories.Utilities}}%</p>
+    <p>Vacation: {{categories.Vacation}}%</p>
+    <p>Others: {{categories.Others}}%</p>
+
+    <div class='chart' id='container' style="width: 20%;">
+        <canvas id='pie-chart'></canvas>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('pie-chart').getContext('2d');
+        
+        // Assuming the 'categories' is a dictionary, we need to pass the values as an array
+        var dataValues = [
+            {{categories.Food}},
+            {{categories.Transportation}},
+            {{categories.Clothing}},
+            {{categories.Utilities}},
+            {{categories.Vacation}},
+            {{categories.Others}}
+        ];
+        
+        var config = {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: dataValues,
+                    backgroundColor: [
+                        '#006769', '#40A578', '#9DDE8B', '#E6FF94', '#BEDC74', '#F6E96B'
+                    ],
+                    label: 'Expenses'
+                }],
+                labels: ['Food', 'Transportation', 'Clothing', 'Utilities', 'Vacation', 'Others']
+            },
+            options: {
+                responsive: true
+            }
+        };
+        
+        // Create the chart
+        new Chart(ctx, config);
+    </script>
+</body>
+</html>

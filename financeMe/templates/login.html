@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+
+    <div class='login-entries'>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="text" name='username' placeholder='Username'>
+            <input type="password" name="password" placeholder='Password'>
+            <button class='submit-button' type="submit"> Login Up</button>
+        </form>
+        <a href="/signup">Signup</a>
+    </div>
+    
+</body>
+</html>

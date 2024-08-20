@@ -1,0 +1,29 @@
+Models: 
+
+    Profile
+        - User
+            - First and Last Name
+            - User model
+            - balance
+
+    Transactions
+        - Money going out
+        - Shop/service
+        - Date
+        - Amount
+        - Reatiler
+        - Product/service
+            - Food
+            - Travels
+            - Vacation
+            - Clothes
+            - Utilities
+            - Clothes
+            - Others
+    
+    Subscriptions
+        - Amount (Monthly)
+        - Service / Organization
+
+
+TrackME -> Track M(My) E(Expenses) ;)
