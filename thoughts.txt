@@ -11,7 +11,8 @@ Models:
         - Shop/service
         - Date
         - Amount
-        - Reatiler
+        - Retailer
+            - Allow users to save and add retailers for easy Transactions
         - Product/service
             - Food
             - Travels
