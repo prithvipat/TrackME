@@ -6,31 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{username}} Account</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">    
+
 </head>
 <body>
     <div class='transactions_made'>
         <ul>
+            <h2>Recent Purchases</h2> 
             {% for t in transactions %}
-            <li><p>{{t.retailer}}: ${{t.amount}} - {{t.date}} - {{t.category}}</p></li>
+            <li><p>{{t.retailer}}: ${{t.amount}} - {{t.date}}</p></li>
             {% endfor %}
         </ul>
     </div>
 
-    <p>Food: {{categories.Food}}%</p>
-    <p>Transportation: {{categories.Transportation}}%</p>
-    <p>Clothing: {{categories.Clothing}}%</p>
-    <p>Utilities: {{categories.Utilities}}%</p>
-    <p>Vacation: {{categories.Vacation}}%</p>
-    <p>Others: {{categories.Others}}%</p>
-
-    <div class='chart' id='container' style="width: 20%;">
-        <canvas id='pie-chart'></canvas>
+    <div class='subscriptions_made'>
+        <ul>
+            <h2>Active Subscriptions</h2>
+            {% for i in subscriptions %}
+            <li><p>{{i.organization}} </p></li>
+            {% endfor %}
+        </ul>
     </div>
 
-    <script>
+        <div class='pie-chart' id='container' style="width: 20%;">
+            <canvas id='pie-chart'></canvas>
+        </div>
+
+        <div class='bar-chart-yearly'>
+            <canvas id='yearly-bar-chart'></canvas>
+        </div>
+    </div>  
+
+    <script> // Pie / Doughnut Chart
         var ctx = document.getElementById('pie-chart').getContext('2d');
-        
-        // Assuming the 'categories' is a dictionary, we need to pass the values as an array
         var dataValues = [
             {{categories.Food}},
             {{categories.Transportation}},
@@ -57,8 +65,52 @@
             }
         };
         
-        // Create the chart
+
         new Chart(ctx, config);
     </script>
+
+    <script> // Bar Chart
+        var ctxYearly = document.getElementById('yearly-bar-chart').getContext('2d');
+        
+        var yearlyData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: '{{year}} Spending',
+                data: [
+                    {{ yearly.Jan }},
+                    {{ yearly.Feb }},
+                    {{ yearly.Mar }},
+                    {{ yearly.Apr }},
+                    {{ yearly.May }},
+                    {{ yearly.Jun }},
+                    {{ yearly.Jul }},
+                    {{ yearly.Aug }},
+                    {{ yearly.Sept }},
+                    {{ yearly.Oct }},
+                    {{ yearly.Nov }},
+                    {{ yearly.Dec }}
+                ],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        };
+    
+        var configYearly = {
+            type: 'bar',
+            data: yearlyData,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+    
+        new Chart(ctxYearly, configYearly);
+    </script>
+    
 </body>
 </html>
