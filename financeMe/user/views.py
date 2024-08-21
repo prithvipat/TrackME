@@ -2,9 +2,56 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from.models import Profile, Transactions
-from django.http import HttpResponse, JsonResponse
+from.models import Profile, Transactions, Subscriptions
 import os
+from datetime import date, timedelta
+
+CATEGORY_CHOICES = ['Food','Transportation', 'Clothing', 
+                    'Utilities','Vacation', 'Others']
+
+def bar_graph_data(profile): # to check and get data from current year
+    this_year = date.today().year
+    all_transaction = Transactions.objects.filter(profile=profile, date__year=this_year).order_by('-time') # Geting data from current year
+    years = {'Jan': 0,'Feb': 0,'Mar': 0,'Apr': 0,'May': 0,'Jun': 0,'Jul': 0,'Aug': 0,'Sept': 0,'Oct':0,'Nov':0,'Dec': 0}
+
+    for i in all_transaction: # Lazy code :( need to fix
+        if i.date.month == 1:
+            years['Jan'] += i.amount
+        
+        if i.date.month == 2:
+            years['Feb'] += i.amount
+        
+        if i.date.month == 3:
+            years['Mar'] += i.amount
+
+        if i.date.month == 4:
+            years['Apr'] += i.amount
+
+        if i.date.month == 5:
+            years['May'] += i.amount
+
+        if i.date.month == 6:
+            years['Jun'] += i.amount
+
+        if i.date.month == 7:
+            years['Jul'] += i.amount
+
+        if i.date.month == 8:
+            years['Aug'] += i.amount
+
+        if i.date.month == 9:
+            years['Sept'] += i.amount
+
+        if i.date.month == 10:
+            years['Oct'] += i.amount
+
+        if i.date.month == 11:
+            years['Nov'] += i.amount
+
+        if i.date.month == 12:
+            years['Dec'] += i.amount
+
+    return years
 
 def get_categories(user_transactions):
         total = 0
@@ -17,7 +64,7 @@ def get_categories(user_transactions):
             'Others': 0
         }
 
-        for i in user_transactions:
+        for i in user_transactions: # To add the amount made to each
             if i.category in CATEGORY_CHOICES:
                 dicts[i.category] += i.amount
                 total += i.amount
@@ -29,18 +76,26 @@ def get_categories(user_transactions):
         
         return dicts
 
-CATEGORY_CHOICES = ['Food','Transportation', 'Clothing', 
-                    'Utilities','Vacation', 'Others']
-
 @login_required(login_url='login')
 def index(request):
     profile = request.user.username
     user = request.user
-    user_transactions = Transactions.objects.filter(profile=profile).order_by('-date')
-    dicts = get_categories(user_transactions)
-    user_object = Profile.objects.get(user=user)
+    user_transactions = Transactions.objects.filter(profile=profile, date__year=date.today().year).order_by('-time')
+    latest = ''
+    second = ''
+    dicts  = {}
 
-    return render(request, 'index.html', {'profile': profile, 'categories': dicts, 'user':user_object})
+    user_object = Profile.objects.get(user=user) # More lazy code, but to check if there are any transactions if there are none show none else show all of them
+    if len(user_transactions) == 0:
+        return render(request, 'index.html', {'profile': profile, 'categories': dicts, 'user':user_object, 'latest':latest, 'second':second})
+    
+    else:
+        dicts = get_categories(user_transactions)
+        latest = user_transactions[0]
+        if len(user_transactions) > 1:
+            second = user_transactions[1]
+
+        return render(request, 'index.html', {'profile': profile, 'categories': dicts, 'user':user_object, 'latest':latest, 'second':second})
 
 @login_required(login_url='login')
 def profile(request):
@@ -54,36 +109,58 @@ def settings(request):
 def make_transaction(request):
 
     if request.method == 'POST':
-        profile = request.user.username
-        transaction_type =  True
-        categoryNum = request.POST['category']
-        category = CATEGORY_CHOICES[int(categoryNum)-1]
-        amount = request.POST['amount']
-        date = request.POST['date']
-        retailer = request.POST['retailer']
+        action = request.POST.get('action')
 
-        new_transaction = Transactions.objects.create(profile=profile, transaction_type=transaction_type, category=category, amount=amount, date=date, retailer=retailer)
-        new_transaction.save()
+        if action == 'Transaction': # To add a transaction
+            profile = request.user.username
+            transaction_type =  True
+            categoryNum = request.POST['category']
+            category = CATEGORY_CHOICES[int(categoryNum)-1]
+            amount = request.POST['amount']
+            retailer = request.POST['retailer']
+            new_transaction = Transactions.objects.create(profile=profile, transaction_type=transaction_type, category=category, amount=amount, retailer=retailer)
+            new_transaction.save()
 
-        return redirect('/')
+            return redirect('/')
     
-    else:
-        return render(request, 'transaction.html')
+        if action == 'Subscription': # To add a Subscription
+            profile = request.user.username
+            amount = request.POST['amount']
+            organization = request.POST['organization']
+
+            if Subscriptions.objects.filter(profile=profile, organization=organization).exists():
+                messages.info(request,f'You already have a {organization} subscription')
+                return redirect('transactions')
+            
+            else:
+                new_subscription = Subscriptions.objects.create(profile=profile, price=amount, organization=organization)
+                new_subscription.save()
+                return redirect('/')
+    
+    return render(request, 'transaction.html')
 
 @login_required(login_url='login')
 def check_transactions(request):
     profile = request.user.username
-    user_transactions = Transactions.objects.filter(profile=profile).order_by('-date')
+    user_transactions = Transactions.objects.filter(profile=profile, date__year=date.today().year).order_by('-time')
     user_transactions_length = len(user_transactions)
+    user_subscriptions = Subscriptions.objects.filter(profile=profile)
 
-    dicts = get_categories(user_transactions)
+    if len(user_transactions) == 0:
+        return render('empy.html')
 
+    else:
+        dicts = get_categories(user_transactions)
+        yearly = bar_graph_data(profile)
     
     context = {
         "username": profile,
         "num_transactions": user_transactions_length,
         "transactions": user_transactions,
         'categories': dicts,
+        'subscriptions': user_subscriptions,
+        'yearly': yearly,
+        'year': date.today().year
     }
 
     return render(request, 'profile.html', context)
