@@ -6,11 +6,37 @@ from.models import Profile, Transactions, Subscriptions
 import os
 from datetime import date, timedelta
 
+this_year = date.today().year
+this_month = date.today().month
+
 CATEGORY_CHOICES = ['Food','Transportation', 'Clothing', 
                     'Utilities','Vacation', 'Others']
+"""
+def change_balance(profile, amount):
+    if profile.balance >= int(amount):
+        profile.balance -= int(amount)
+        return True
+        # if balance <= 100 send message
+    
+    else:
+        return False
+"""
+def check_yearly_spending(profile):
+    all_transaction = Transactions.objects.filter(profile=profile, date__year=this_year)
+    all_subscriptions = Subscriptions.filter(profile=profile)
+
+    total = 0
+    total_subscription = 0
+
+    for i in all_transaction:
+        total += i.amount
+    
+    for x in all_subscriptions:
+        total_subscription = total_subscription + (i.price * 12)
+    
+    return total, total_subscription
 
 def bar_graph_data(profile): # to check and get data from current year
-    this_year = date.today().year
     all_transaction = Transactions.objects.filter(profile=profile, date__year=this_year).order_by('-time') # Geting data from current year
     years = {'Jan': 0,'Feb': 0,'Mar': 0,'Apr': 0,'May': 0,'Jun': 0,'Jul': 0,'Aug': 0,'Sept': 0,'Oct':0,'Nov':0,'Dec': 0}
 
@@ -84,8 +110,8 @@ def index(request):
     latest = ''
     second = ''
     dicts  = {}
-
     user_object = Profile.objects.get(user=user) # More lazy code, but to check if there are any transactions if there are none show none else show all of them
+
     if len(user_transactions) == 0:
         return render(request, 'index.html', {'profile': profile, 'categories': dicts, 'user':user_object, 'latest':latest, 'second':second})
     
@@ -103,7 +129,10 @@ def profile(request):
 
 @login_required(login_url='login')
 def settings(request):
-    return render(request, 'settings.html')
+    user = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user)
+
+    return render(request, 'settings.html', {'profile': profile})
 
 @login_required(login_url='login')
 def make_transaction(request):
@@ -120,7 +149,6 @@ def make_transaction(request):
             retailer = request.POST['retailer']
             new_transaction = Transactions.objects.create(profile=profile, transaction_type=transaction_type, category=category, amount=amount, retailer=retailer)
             new_transaction.save()
-
             return redirect('/')
     
         if action == 'Subscription': # To add a Subscription
@@ -145,9 +173,10 @@ def check_transactions(request):
     user_transactions = Transactions.objects.filter(profile=profile, date__year=date.today().year).order_by('-time')
     user_transactions_length = len(user_transactions)
     user_subscriptions = Subscriptions.objects.filter(profile=profile)
+    user_subscriptions_length = len(user_subscriptions)
 
     if len(user_transactions) == 0:
-        return render('empy.html')
+        return render(request, 'empy.html')
 
     else:
         dicts = get_categories(user_transactions)
@@ -159,9 +188,13 @@ def check_transactions(request):
         "transactions": user_transactions,
         'categories': dicts,
         'subscriptions': user_subscriptions,
+        'num_subscriptions': user_subscriptions_length,
         'yearly': yearly,
         'year': date.today().year
     }
+
+    if request.method == 'POST':
+        pass
 
     return render(request, 'profile.html', context)
 
