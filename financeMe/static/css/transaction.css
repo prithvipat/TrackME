@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 *{
     margin: 0;
     padding: 0;
@@ -10,6 +11,7 @@ a {
     text-decoration: none;
     color: var(--text-color)
 }
+
 :root{
     /* ===== Colors ===== */
     --body-color: #FFF;
@@ -24,15 +26,18 @@ a {
     --tran-04: all 0.3s ease;
     --tran-05: all 0.3s ease;
 }
+
 body{
     min-height: 100vh;
     background-color: var(--body-color);
     transition: var(--tran-05);
 }
+
 ::selection{
     background-color: var(--primary-color);
     color: #fff;
 }
+
 body.dark{
     --body-color: #18191a;
     --sidebar-color: #242526;
@@ -53,6 +58,7 @@ body.dark{
     transition: var(--tran-05);
     z-index: 100;  
 }
+
 .sidebar.close{
     width: 88px;
 }
@@ -290,127 +296,40 @@ body.dark .home .text{
 }
 
 
-/* CSS for Posts */
-
-.post {
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    margin: 20px 0;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 350px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.post-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.post-user-img {
-    height: 35px;
-    width: 35px;
-    border-radius: 50%;
-    margin-right: 10px;
-    margin-left: 10px;
-}
-
-.post-user-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.post-user-info a {
-    font-weight: bold;
-    text-decoration: none;
-    color: #333;
-}
-
-.post-caption {
-    font-size: 14px;
-    color: #555;
-    margin-left: 10px;
-}
-
-.post-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.post-img {
-    width: 300px;
-    height: 300px;
-    border-radius: 10px;
-}
-
-.post-footer {
-    display: flex;
-    align-items: center;
-}
-
-.like-button {
-    display: flex;
-    color: red;
-    text-decoration: none;
-    margin-right: 5px;
-    font-size: 20px;
-    margin-left: 10px;
-}
-
-.post-footer span {
-    font-size: 14px;
-    color: #555;
-}
-
-.post-username {
-    font-size: 20px;
-}
-
-.post-footer {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Align items to the start of the column */
-}
-
-.likes-section {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px; /* Adjust spacing between likes section and caption */
-}
-
-.like-button {
-    text-decoration: none;
-    font-size: 20px;
-    margin-right: 5px;
-    border: none;
-    background-color: #f9f9f9;
-}
-
-.like-button:hover {
-    cursor: pointer;
-}
-
-.bx-heart {
-    color: black;
-}
-
-.bx-heart.toggle {
-    color: red;
-}
-
-.spending {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-
 .input-fields {
     justify-content: center;
     align-items: center;
     display: flex;
+}
+
+
+.subscriptions {
+    margin-top: 50px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+p { 
+    margin-top: 10%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.sub-header {
+    margin-top: 10%;
+    margin-bottom: -2.7%;
+}
+
+input { 
+    height: 30px;
+    width: 180px;
+    border-radius: 25px;
+    border: none;
+    background-color: none;
+    box-shadow: none;
+    text-indent: 10px;
+    border-width: 1px; 
+    background-color: lightgray;
 }
