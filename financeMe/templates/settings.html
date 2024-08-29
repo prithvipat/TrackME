@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+</head>
+<body>
+    
+    <div class='user-info'>
+        <p>{{profile.user.username}}</p>
+        <p>monthly cashflow: $0</p>
+        <p>Balance: ${{profile.balance}}</p>
+        
+
+        <form action="" method='POST'>
+            {% csrf_token %}
+
+            <input type="text" name='budget', placeholder='Budget $'>
+            <input type="text" name="category", placeholder='Category'>
+        </form>
+
+    </div>
+
+    
+</body>
+</html>
