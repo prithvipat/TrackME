@@ -26,5 +26,8 @@ Models:
         - Amount (Monthly)
         - Service / Organization
 
+APIs
+    - Chart.JS (Charts & Graphs)
+    - PLAID (Trusted Banking API)
 
-TrackME -> Track M(My) E(Expenses) ;)
+TrackME -> Track M(My) E(Expenses)
