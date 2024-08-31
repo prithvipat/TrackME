@@ -26,6 +26,10 @@ Models:
         - Amount (Monthly)
         - Service / Organization
 
+Budgets:
+    - Categeory
+    - Budget Amount
+
 APIs
     - Chart.JS (Charts & Graphs)
     - PLAID (Trusted Banking API)
