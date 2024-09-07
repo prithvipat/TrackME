@@ -19,6 +19,11 @@ class Profile(models.Model):
     id_user = models.IntegerField()
     balance = models.DecimalField(blank=True, default=0, decimal_places=2, max_digits=10)
     cash_flow = models.DecimalField(blank=True,decimal_places=2, max_digits=10, default=0)
+    food_budget = models.DecimalField(blank=True, decimal_places=2, max_digits=10, default=0)
+    transport_budget = models.DecimalField(blank=True, decimal_places=2, max_digits=10, default=0)
+    clothing_budget = models.DecimalField(blank=True, decimal_places=2, max_digits=10, default=0)
+    utilities_budget = models.DecimalField(blank=True, decimal_places=2, max_digits=10, default=0)
+    others_budget = models.DecimalField(blank=True, decimal_places=2, max_digits=10, default=0)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -43,11 +48,6 @@ class Subscriptions(models.Model):
     profile = models.CharField(max_length=100)
     organization = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2) # Monthly Price
-
-class Budget(models.Model):
-    profile = models.CharField(max_length=100)
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    set_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 """
