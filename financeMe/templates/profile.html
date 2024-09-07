@@ -84,7 +84,7 @@
     <div class='user-info'>
         <div class='transactions_made'>
             <ul class = 'hh'>
-                <h2>{{percentage_yearly}}: {{num_transactions}}&nbsp &nbsp${{total_monthly}}</h2>
+                <h2>{{month}} Transactions: {{num_transactions}}&nbsp &nbsp${{total_monthly}}</h2>
                 {% for t in transactions %}
                 <li class='jj'><p>{{t.retailer}}: ${{t.amount}} - {{t.date}}</p></li>
                 {% endfor %}
@@ -196,18 +196,18 @@
             datasets: [{
                 label: '{{year}} Spending',
                 data: [
-                    {{ yearly.Jan }},
-                    {{ yearly.Feb }},
-                    {{ yearly.Mar }},
-                    {{ yearly.Apr }},
-                    {{ yearly.May }},
-                    {{ yearly.Jun }},
-                    {{ yearly.Jul }},
-                    {{ yearly.Aug }},
-                    {{ yearly.Sept }},
-                    {{ yearly.Oct }},
-                    {{ yearly.Nov }},
-                    {{ yearly.Dec }}
+                    {{ bar_graph_data.Jan }},
+                    {{ bar_graph_data.Feb }},
+                    {{ bar_graph_data.Mar }},
+                    {{ bar_graph_data.Apr }},
+                    {{ bar_graph_data.May }},
+                    {{ bar_graph_data.Jun }},
+                    {{ bar_graph_data.Jul }},
+                    {{ bar_graph_data.Aug }},
+                    {{ bar_graph_data.Sept }},
+                    {{ bar_graph_data.Oct }},
+                    {{ bar_graph_data.Nov }},
+                    {{ bar_graph_data.Dec }}
                 ],
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)',
