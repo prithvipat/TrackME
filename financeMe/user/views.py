@@ -162,16 +162,8 @@ def bar_graph_data(transactions): # to check and get data from current year
 
             if i.date.month == 12:
                 months['Dec'] += i.amount
-        
-        for i in months:
-            if i in new_:
-                new_[i] += 1
-            
-            else:
-                new_.update({i:1})
 
-
-        return months, new_
+        return months
 
 def pie_graph_data(user_transactions):
     total = 0
@@ -268,13 +260,13 @@ def make_transaction(request):
 def check_transactions(request):
     profile = request.user.username
     user_transactions_month = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time')
-    user_transactions_year = Transactions.objects.filter(profile=profile, date__year=date.today().year).order_by('-time')
-    user_transactions_len = len(user_transactions_month)
+    user_transactions_year = Transactions.objects.filter(profile=profile, date__year=date.today().year)
+    user_transactions_len_this_month = len(user_transactions_month)
     user_subscriptions = Subscriptions.objects.filter(profile=profile)
     user_subscriptions_length = len(user_subscriptions)
     yearly = bar_graph_data(user_transactions_year)
-    sub = subscription_prices(user_subscriptions)
     pie_graph = pie_graph_data(user_transactions_month)
+    percentage_year = pie_graph_data(user_transactions_year)
     total_year, total_subscription, total_monthly, monthly_subscription, total = check_yearly_spending(user_transactions_year, user_subscriptions, user_transactions_month)
 
     context = {
@@ -283,16 +275,16 @@ def check_transactions(request):
         'categories': pie_graph, # Pie graph data
         'subscriptions': user_subscriptions, # All subscriptions
         'num_subscriptions': user_subscriptions_length, # Number of subscriptions
-        'yearly': yearly, # Total Year spending
-        'month': all_months[date.today().month -1], # The month
-        'year': date.today().year,
-        'num_transactions': user_transactions_len,
+        'bar_graph_data': yearly, # Total Year spending
+        'this_month': all_months[this_month -1], # The month
+        'this_year': date.today().year,
+        'num_transactions': user_transactions_len_this_month,
         'total_year': total_year, # Total 
         'total_sub': total_subscription, # 
         'total_monthly': total_monthly, # 
         'monthly_subs': monthly_subscription, # Total spending for subscriptions
-        'total': total # Total yearly spending (transactions + subscriptions)
-    }
+        'percentage_yearly': percentage_year
+}
 
     return render(request, 'profile.html', context)
 
@@ -359,34 +351,4 @@ def signup(request):
         return render(request, 'signup.html')
 
 def playground(request):
-    percentage_year = pie_graph_data(user_transactions_year)
-    profile = request.user.username
-    user_transactions_month = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time')
-    user_transactions_year = Transactions.objects.filter(profile=profile, date__year=date.today().year).order_by('-time')
-    user_transactions_len = len(user_transactions_month)
-    user_subscriptions = Subscriptions.objects.filter(profile=profile)
-    user_subscriptions_length = len(user_subscriptions)
-    yearly = bar_graph_data(user_transactions_year)
-    sub = subscription_prices(user_subscriptions)
-    pie_graph = pie_graph_data(user_transactions_month)
-    total_year, total_subscription, total_monthly, monthly_subscription, total = check_yearly_spending(user_transactions_year, user_subscriptions, user_transactions_month)
-    percentage_year = pie_graph_data(user_transactions_year)
-
-    context = {
-        "username": profile, # Profile
-        "transactions": user_transactions_month, # Transactions for the month
-        'categories': pie_graph, # Pie graph data
-        'subscriptions': user_subscriptions, # All subscriptions
-        'num_subscriptions': user_subscriptions_length, # Number of subscriptions
-        'yearly': yearly, # Total Year spending
-        'month': all_months[date.today().month -1], # The month
-        'year': date.today().year,
-        'num_transactions': user_transactions_len,
-        'total_year': total_year, # Total 
-        'total_sub': total_subscription, # 
-        'total_monthly': total_monthly, # 
-        'monthly_subs': monthly_subscription, # Total spending for subscriptions
-        'percentage_yearly': percentage_year
-}
-
-    return render(request, 'playground.html', context)
+    return render(request, 'playground.html')
