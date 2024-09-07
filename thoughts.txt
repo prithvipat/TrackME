@@ -1,5 +1,4 @@
 Models: 
-
     Profile
         - User
             - First and Last Name
@@ -21,17 +20,50 @@ Models:
             - Utilities
             - Clothes
             - Others
+        - Budget for all categories
     
     Subscriptions
         - Amount (Monthly)
         - Service / Organization
 
-Budgets:
-    - Categeory
-    - Budget Amount
-
-APIs
-    - Chart.JS (Charts & Graphs)
+API:
+    - Chart.JS
     - PLAID (Trusted Banking API)
 
-TrackME -> Track M(My) E(Expenses)
+
+Need to do:
+    - API
+        - News
+        - PLAID
+
+    - Features
+        - Allow user to see spending disparity in profile page
+        - Allow user to download a csv file each year  
+            - also upload to django database
+            - Delete all previous year data keep csv file instead
+        - Taxes ??
+        - Charts for store distribution
+        
+    - Design
+        - Make it look better dummy
+        - Need Theme for colors (Black, White, and Grey ???)
+            - Charts, Nav Bar
+        - Dark Mode???? Where TF is that
+        - Make it smooth - Dynamic HTML templates - figure that out
+
+    
+    - Machine Learning
+        - Apply to news api and find current news based on spending habits
+        - Ways to save money
+
+    - Others:
+        - Name the variables better you donkey
+        - 
+
+Done
+    - Charts
+    - General Saving of Transactions
+    - Subscriptions payments monthly
+    - 
+
+TrackME -> Track M(My) E(Expenses) ;)
