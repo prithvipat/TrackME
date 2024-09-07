@@ -56,7 +56,7 @@ def temp(profile):
             new_csv.csvfile.save(file_name, new_csv)
 """
 
-def check_yearly_spending(all_transaction, all_subscriptions, monthly_spend):
+def check_yearly_spending(all_transaction, all_subscriptions, monthly_spend): #Checks yearly spending on transactions + subscriptions + combined
 
     total = 0
     total_subscription = 0
@@ -72,13 +72,12 @@ def check_yearly_spending(all_transaction, all_subscriptions, monthly_spend):
     for x in all_subscriptions:
         total_subscription = total_subscription + (x.price * 12)
         monthly_subs += x.price
-
     
     everything = total + total_subscription
     
     return total,total_subscription, monthly_spending, monthly_subs,everything
 
-def setBudget(request, profile):
+def setBudget(request, profile): # WIP Sets a budget or edits budget
 
     category = request.POST.get('category')
     category = category.lower()
@@ -86,23 +85,15 @@ def setBudget(request, profile):
 
     return profile.food_budget
 
-def subscription_prices(subs):
-    total_monthly = 0
-
-    for i in subs:
-        total_monthly += i.price
-    
-    return total_monthly
-
 """
 def displayBudget(profile):
     budgets = Budget.objects.filter(profile=profile)
 """
 
-def compare_budget():
+def compare_budget(): # WIP compares current spending with budget
     pass
 
-def recent_stores(transactions):
+def recent_stores(transactions): # Gets current month transactions
     le = len(transactions)
     stores_count = {}
 
@@ -120,7 +111,6 @@ def recent_stores(transactions):
 
 def bar_graph_data(transactions): # to check and get data from current year
     months = {'Jan': 0,'Feb': 0,'Mar': 0,'Apr': 0,'May': 0,'Jun': 0,'Jul': 0,'Aug': 0,'Sept': 0,'Oct':0,'Nov':0,'Dec': 0}
-    new_ = {}
 
     if len(transactions) == 0:
         return months
@@ -165,7 +155,7 @@ def bar_graph_data(transactions): # to check and get data from current year
 
         return months
 
-def pie_graph_data(user_transactions):
+def pie_graph_data(user_transactions): # Gets data for Pie chart
     total = 0
     dicts = {
         'Food': 0,
@@ -192,7 +182,7 @@ def pie_graph_data(user_transactions):
         return dicts
 
 @login_required(login_url='login')
-def index(request):
+def index(request): # Main page
     profile = request.user.username
     user = request.user
     user_transactions = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time')
@@ -218,11 +208,48 @@ def profile(request):
 
 @login_required(login_url='login')
 def settings(request):
-    user = User.objects.get(username=request.user.username)
-    profile = Profile.objects.get(user=user)
+    profile = request.user.username  # Profile Username
+    user_object = User.objects.get(username=profile)  # Get the user model
+    profile_model = Profile.objects.get(user=user_object)  # Get the profile model
 
+    if request.method == 'POST':
+        action = request.POST.get('action')
 
-    return render(request, 'settings.html', {'profile': profile})
+        if action == 'budgets':
+
+            # Get the values from the form, set a default of None if a field is empty
+            new_food_budget = request.POST.get('food', None)
+            new_clothing_budget = request.POST.get('clothes', None)
+            new_util_budget = request.POST.get('util', None)
+            new_transport_budget = request.POST.get('transport', None)
+
+            # Update the budgets if they are valid
+            if new_food_budget and new_food_budget.isdigit() and int(new_food_budget) > 0:
+                profile_model.food_budget = int(new_food_budget)
+
+            if new_clothing_budget and new_clothing_budget.isdigit() and int(new_clothing_budget) > 0:
+                profile_model.clothing_budget = int(new_clothing_budget)
+
+            if new_util_budget and new_util_budget.isdigit() and int(new_util_budget) > 0:
+                profile_model.utilities_budget = int(new_util_budget)
+
+            if new_transport_budget and new_transport_budget.isdigit() and int(new_transport_budget) > 0:
+                profile_model.transport_budget = int(new_transport_budget)
+
+            profile_model.save()
+
+            return redirect('settings')
+
+    else:
+        context = {
+            'food_budget': profile_model.food_budget,
+            'clothing_budget': profile_model.clothing_budget,
+            'utilities_budget': profile_model.utilities_budget,
+            'transport_budget': profile_model.transport_budget,
+            'others_budget': profile_model.others_budget,
+        }
+
+        return render(request, 'settings.html', context)
 
 @login_required(login_url='login')
 def make_transaction(request):
@@ -258,15 +285,17 @@ def make_transaction(request):
 
 @login_required(login_url='login')
 def check_transactions(request):
-    profile = request.user.username
-    user_transactions_month = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time')
-    user_transactions_year = Transactions.objects.filter(profile=profile, date__year=date.today().year)
-    user_transactions_len_this_month = len(user_transactions_month)
-    user_subscriptions = Subscriptions.objects.filter(profile=profile)
-    user_subscriptions_length = len(user_subscriptions)
-    yearly = bar_graph_data(user_transactions_year)
-    pie_graph = pie_graph_data(user_transactions_month)
-    percentage_year = pie_graph_data(user_transactions_year)
+    profile = request.user.username # Profile Username
+    user_object = User.objects.get(username=profile) # Gets the user Model
+    profile_model = Profile.objects.get(user=user_object) # Gets the profile Model
+    user_transactions_month = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time') # Transactions for the month
+    user_transactions_year = Transactions.objects.filter(profile=profile, date__year=date.today().year) # Transactions for the year
+    user_transactions_len_this_month = len(user_transactions_month) # Number of transactions this month
+    user_subscriptions = Subscriptions.objects.filter(profile=profile) # All subscriptions
+    user_subscriptions_length = len(user_subscriptions) # Number of subscriptions
+    yearly = bar_graph_data(user_transactions_year) # Data for bar graph
+    pie_graph = pie_graph_data(user_transactions_month) # Data for pie graph (current month)
+    percentage_year = pie_graph_data(user_transactions_year) # Data for pie graph (year)
     total_year, total_subscription, total_monthly, monthly_subscription, total = check_yearly_spending(user_transactions_year, user_subscriptions, user_transactions_month)
 
     context = {
@@ -283,8 +312,9 @@ def check_transactions(request):
         'total_sub': total_subscription, # 
         'total_monthly': total_monthly, # 
         'monthly_subs': monthly_subscription, # Total spending for subscriptions
-        'percentage_yearly': percentage_year
-}
+        'percentage_yearly': percentage_year,
+        'food_budget': profile_model.clothing_budget
+    }
 
     return render(request, 'profile.html', context)
 
@@ -351,4 +381,46 @@ def signup(request):
         return render(request, 'signup.html')
 
 def playground(request):
-    return render(request, 'playground.html')
+    profile = request.user.username  # Profile Username
+    user_object = User.objects.get(username=profile)  # Get the user model
+    profile_model = Profile.objects.get(user=user_object)  # Get the profile model
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'budget':
+
+            # Get the values from the form, set a default of None if a field is empty
+            new_food_budget = request.POST.get('food', None)
+            new_clothing_budget = request.POST.get('clothes', None)
+            new_util_budget = request.POST.get('util', None)
+            new_transport_budget = request.POST.get('transport', None)
+
+            # Update the budgets if they are valid
+            if new_food_budget and new_food_budget.isdigit() and int(new_food_budget) > 0:
+                profile_model.food_budget = int(new_food_budget)
+
+            if new_clothing_budget and new_clothing_budget.isdigit() and int(new_clothing_budget) > 0:
+                profile_model.clothing_budget = int(new_clothing_budget)
+
+            if new_util_budget and new_util_budget.isdigit() and int(new_util_budget) > 0:
+                profile_model.utilities_budget = int(new_util_budget)
+
+            if new_transport_budget and new_transport_budget.isdigit() and int(new_transport_budget) > 0:
+                profile_model.transport_budget = int(new_transport_budget)
+
+            profile_model.save()
+
+            return redirect('playground')
+
+    else:
+        context = {
+            'food_budget': profile_model.food_budget,
+            'clothing_budget': profile_model.clothing_budget,
+            'utilities_budget': profile_model.utilities_budget,
+            'transport_budget': profile_model.transport_budget,
+            'others_budget': profile_model.others_budget,
+        }
+
+        return render(request, 'playground.html', context)
+
