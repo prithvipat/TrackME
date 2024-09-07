@@ -1,255 +1,392 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{username}} Account</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="{% static 'css/profile.css' %}">    
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import User, auth
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from.models import Profile, Transactions, Subscriptions
+import os
+from datetime import date, timedelta
+import pandas as pd
+import csv
+this_year = date.today().year
+this_month = date.today().month
+this_day = date.today().day
 
-</head>
-<body>
-    <nav class="sidebar close">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <img src="/media/TrackME.png" alt="">
-                </span>
-                <div class="text logo-text">
-                    <span class="name">TrackME</span>
-                </div>
-            </div>
-            <i class='bx bx-chevron-right toggle'></i>
-        </header>
-        <div class="menu-bar">
-            <div class="menu">
-                <ul class="menu-links">
-                    <li class="nav-link">
-                        <a href="/">
-                            <i class='bx bx-home-alt icon'></i>
-                            <span class="text nav-text">Home</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/profile">
-                            <i class='bx bx-user icon'></i>
-                            <span class="text nav-text">Profile</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-news icon'></i>
-                            <span class="text nav-text">News</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#">
-                            <i class='bx bx-bell icon'></i>
-                            <span class="text nav-text">Account Actions</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/transaction">
-                            <i class='bx bx-transfer-alt icon'></i>
-                            <span class="text nav-text">Transaction</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="bottom-content">
-                <li class="#">
-                    <a href="/logout">
-                        <i class='bx bx-log-out icon'></i>
-                        <span class="text nav-text">Logout</span>
-                    </a>
-                </li>
-                <li class="mode">
-                    <div class="sun-moon">
-                        <i class='bx bx-moon icon moon'></i>
-                        <i class='bx bx-sun icon sun'></i>
-                    </div>
-                    <span class="mode-text text">Dark mode</span>
-                    <div class="toggle-switch">
-                        <span class="switch"></span>
-                    </div>
-                </li>
+all_months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+CATEGORY_CHOICES = ['Food','Transportation', 'Clothing', 'Utilities','Vacation', 'Others']
+"""
+def change_balance(profile, amount):
+    if profile.balance >= int(amount):
+        profile.balance -= int(amount)
+        return True
+        # if balance <= 100 send message
+    
+    else:
+        return False
+
+    Date,Category,Retailer,Amount,
+"""
+
+"""
+def temp(profile):
+    # - figure out how to allow user to create the folder and allow accept the download or not
+    # - Allow user to download all csv files from settings page
+    if this_month >= 8:
+        exsisting_csv = CSVFiles.objects.filter(profile=profile, csvfile__icontains=f"{date.today().year}_Report.csv")
+        prev_year_transactions = Transactions.objects.filter(profile=profile, date__year=date.today().year)
+
+        if not exsisting_csv:
+            data = {
+                'Date': [],
+                'Category': [],
+                'Retailer': [],
+                'Amount': []
+            }
+
+            for i in prev_year_transactions:
+                data['Date'].append(str(i.date))
+                data['Category'].append(i.category)
+                data['Retailer'].append(i.retailer)
+                data['Amount'].append(f"${i.amount}")
+
+            df = pd.DataFrame(data)
+            new_file = df.to_csv(index=True)
+            file_name = f"{this_year}_Report.csv"
+
+            new_csv = CSVFiles.objects.create(profile=profile)
+            new_csv.csvfile.save(file_name, new_csv)
+"""
+
+def check_yearly_spending(all_transaction, all_subscriptions, monthly_spend):
+
+    total = 0
+    total_subscription = 0
+    monthly_spending = 0
+    monthly_subs = 0
+
+    for i in all_transaction:
+        total += i.amount
+    
+    for n in monthly_spend:
+        monthly_spending += n.amount
+
+    for x in all_subscriptions:
+        total_subscription = total_subscription + (x.price * 12)
+        monthly_subs += x.price
+
+    
+    everything = total + total_subscription
+    
+    return total,total_subscription, monthly_spending, monthly_subs,everything
+
+def setBudget(request, profile):
+
+    category = request.POST.get('category')
+    category = category.lower()
+    amount = request.POST.get('amount')
+
+    return profile.food_budget
+
+def subscription_prices(subs):
+    total_monthly = 0
+
+    for i in subs:
+        total_monthly += i.price
+    
+    return total_monthly
+
+"""
+def displayBudget(profile):
+    budgets = Budget.objects.filter(profile=profile)
+"""
+
+def compare_budget():
+    pass
+
+def recent_stores(transactions):
+    le = len(transactions)
+    stores_count = {}
+
+    for i in transactions:
+        if i.retailer in stores_count:
+            stores_count[i.retailer] += 1
+        
+        else:
+            stores_count.update({i.retailer: 1})
+    
+    for i in stores_count:
+        stores_count[i] = (stores_count[i]/le) * 100
+    
+    return stores_count
+
+def bar_graph_data(transactions): # to check and get data from current year
+    months = {'Jan': 0,'Feb': 0,'Mar': 0,'Apr': 0,'May': 0,'Jun': 0,'Jul': 0,'Aug': 0,'Sept': 0,'Oct':0,'Nov':0,'Dec': 0}
+    new_ = {}
+
+    if len(transactions) == 0:
+        return months
+    
+    else:
+        for i in transactions: # Lazy code :( need to fix
+            if i.date.month == 1:
+                months['Jan'] += i.amount
+            
+            if i.date.month == 2:
+                months['Feb'] += i.amount
+            
+            if i.date.month == 3:
+                months['Mar'] += i.amount
+
+            if i.date.month == 4:
+                months['Apr'] += i.amount
+
+            if i.date.month == 5:
+                months['May'] += i.amount
+
+            if i.date.month == 6:
+                months['Jun'] += i.amount
+
+            if i.date.month == 7:
+                months['Jul'] += i.amount
+
+            if i.date.month == 8:
+                months['Aug'] += i.amount
+
+            if i.date.month == 9:
+                months['Sept'] += i.amount
+
+            if i.date.month == 10:
+                months['Oct'] += i.amount
+
+            if i.date.month == 11:
+                months['Nov'] += i.amount
+
+            if i.date.month == 12:
+                months['Dec'] += i.amount
+        
+        for i in months:
+            if i in new_:
+                new_[i] += 1
+            
+            else:
+                new_.update({i:1})
+
+
+        return months, new_
+
+def pie_graph_data(user_transactions):
+    total = 0
+    dicts = {
+        'Food': 0,
+        'Transportation': 0,
+        'Clothing': 0,
+        'Utilities': 0,
+        'Vacation': 0,
+        'Others': 0   
+        }
+    
+    if len(user_transactions) != 0:
+        for i in user_transactions: # To add the amount made to each
+            dicts[i.category] += i.amount
+            total += i.amount
+        
+        for n in dicts:
+            dicts[n] /= total
+            dicts[n] *= 100
+            dicts[n] = round(dicts[n])
+        
+        return dicts
+    
+    else:
+        return dicts
+
+@login_required(login_url='login')
+def index(request):
+    profile = request.user.username
+    user = request.user
+    user_transactions = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time')
+    latest = ''
+    second = ''
+    dicts  = {}
+    user_object = Profile.objects.get(user=user) # More lazy code, but to check if there are any transactions if there are none show none else show all of them
+
+    if len(user_transactions) == 0:
+        return render(request, 'index.html', {'profile': profile, 'categories': dicts, 'user':user_object, 'latest':latest, 'second':second})
+    
+    else:
+        dicts = pie_graph_data(user_transactions)
+        latest = user_transactions[0]
+        if len(user_transactions) > 1:
+            second = user_transactions[1]
+
+    return render(request, 'index.html', {'profile': profile, 'categories': dicts, 'user':user_object, 'latest':latest, 'second':second})
+
+@login_required(login_url='login')
+def profile(request):
+    return render(request, 'profile.html')
+
+@login_required(login_url='login')
+def settings(request):
+    user = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user)
+
+
+    return render(request, 'settings.html', {'profile': profile})
+
+@login_required(login_url='login')
+def make_transaction(request):
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'Transaction': # To add a transaction
+            profile = request.user.username
+            categoryNum = request.POST['category']
+            category = CATEGORY_CHOICES[int(categoryNum)-1]
+            amount = request.POST['amount']
+            retailer = request.POST['retailer']
+            new_transaction = Transactions.objects.create(profile=profile, category=category, amount=amount, retailer=retailer)
+            new_transaction.save()
+            return redirect('/')
+    
+        if action == 'Subscription': # To add a Subscription
+            profile = request.user.username
+            amount = request.POST['amount']
+            organization = request.POST['organization']
+
+            if Subscriptions.objects.filter(profile=profile, organization=organization).exists():
+                messages.info(request,f'You already have a {organization} subscription')
+                return redirect('transactions')
+            
+            else:
+                new_subscription = Subscriptions.objects.create(profile=profile, price=amount, organization=organization)
+                new_subscription.save()
+                return redirect('/')
+    
+    return render(request, 'transaction.html')
+
+@login_required(login_url='login')
+def check_transactions(request):
+    profile = request.user.username
+    user_transactions_month = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time')
+    user_transactions_year = Transactions.objects.filter(profile=profile, date__year=date.today().year).order_by('-time')
+    user_transactions_len = len(user_transactions_month)
+    user_subscriptions = Subscriptions.objects.filter(profile=profile)
+    user_subscriptions_length = len(user_subscriptions)
+    yearly = bar_graph_data(user_transactions_year)
+    sub = subscription_prices(user_subscriptions)
+    pie_graph = pie_graph_data(user_transactions_month)
+    total_year, total_subscription, total_monthly, monthly_subscription, total = check_yearly_spending(user_transactions_year, user_subscriptions, user_transactions_month)
+
+    context = {
+        "username": profile, # Profile
+        "transactions": user_transactions_month, # Transactions for the month
+        'categories': pie_graph, # Pie graph data
+        'subscriptions': user_subscriptions, # All subscriptions
+        'num_subscriptions': user_subscriptions_length, # Number of subscriptions
+        'yearly': yearly, # Total Year spending
+        'month': all_months[date.today().month -1], # The month
+        'year': date.today().year,
+        'num_transactions': user_transactions_len,
+        'total_year': total_year, # Total 
+        'total_sub': total_subscription, # 
+        'total_monthly': total_monthly, # 
+        'monthly_subs': monthly_subscription, # Total spending for subscriptions
+        'total': total # Total yearly spending (transactions + subscriptions)
+    }
+
+    return render(request, 'profile.html', context)
+
+@login_required(login_url='login')
+def logout(request):
+    auth.logout(request)
+    return redirect('login')
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('/')
                 
-            </div>
-        </div>
-    </nav>
-
-    <div class='user-info'>
-        <div class='transactions_made'>
-            <ul class = 'hh'>
-                <h2>Recent Purchases {{num_transactions}}</h2>
-                {% for t in transactions %}
-                <li class='jj'><p>{{t.retailer}}: {{t.amount}} - {{t.date}}</p></li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class='subscriptions_made'>
-            <ul class='hh'>
-                <h2 class='headers'>Active Subscriptions: {{num_subscriptions}}</h2>
-                <div class='hh2'>
-                    {% for i in subscriptions %}
-                    <li class='jj'><p>{{i.organization}} </p></li>
-                    {% endfor %}
-                </div>
-            </ul>
-        </div>
-
-            <div class='pie-chart' id='container' style="width: 20%;">
-                <canvas id='pie-chart'></canvas>
-            </div>
-
-            <div class='bar-chart-yearly'>
-                <canvas id='yearly-bar-chart'></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div class='budgets'>
-
-        <p> {{budget}}</p>
-        <a href="/settings"></a>
-
-    </div>
-
-    <script> // Pie / Doughnut Chart
-        var ctx = document.getElementById('pie-chart').getContext('2d');
-        var dataValues = [
-            {{categories.Food}},
-            {{categories.Transportation}},
-            {{categories.Clothing}},
-            {{categories.Utilities}},
-            {{categories.Vacation}},
-            {{categories.Others}}
-        ];
-        
-        var config = {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: dataValues,
-                    backgroundColor: [
-                        '#006769', '#40A578', '#9DDE8B', '#E6FF94', '#BEDC74', '#F6E96B'
-                    ],
-                    label: 'Expenses'
-                }],
-                labels: ['Food', 'Transportation', 'Clothing', 'Utilities', 'Vacation', 'Others']
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display:true,
-                        text: 'Spending Disparity: {{year}}'
-                    },
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        };
-        
-
-        new Chart(ctx, config);
-    </script>
-
-    <script> // Bar Chart
-        var ctxYearly = document.getElementById('yearly-bar-chart').getContext('2d');
-        
-        var yearlyData = {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-                label: '{{year}} Spending',
-                data: [
-                    {{ yearly.Jan }},
-                    {{ yearly.Feb }},
-                    {{ yearly.Mar }},
-                    {{ yearly.Apr }},
-                    {{ yearly.May }},
-                    {{ yearly.Jun }},
-                    {{ yearly.Jul }},
-                    {{ yearly.Aug }},
-                    {{ yearly.Sept }},
-                    {{ yearly.Oct }},
-                    {{ yearly.Nov }},
-                    {{ yearly.Dec }}
-                ],
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        };
+        else:
+            messages.info(request, 'Credentials Invalid')
+            return redirect('login')
     
-        var configYearly = {
-            type: 'bar',
-            data: yearlyData,
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    title: {
-                        display:true,
-                        text: "Yearly Spending"
-                    }
-                }
-            }
-        };
-    
-        new Chart(ctxYearly, configYearly);
-    </script>
+    return render(request, 'login.html')
 
-    <script>
-        const body = document.querySelector('body'),
-        sidebar = body.querySelector('nav'),
-        toggle = body.querySelector(".toggle"),
-        modeSwitch = body.querySelector(".toggle-switch"),
-        modeText = body.querySelector(".mode-text");
+def signup(request):
 
-  toggle.addEventListener("click", () => {
-      sidebar.classList.toggle("close");
-  });
+    if request.method == "POST":
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password1']
+        password2 = request.POST['password2']
+        firstName = request.POST['firstName']
+        lastName = request.POST['lastName']
 
-  searchBtn.addEventListener("click", () => {
-      sidebar.classList.remove("close");
-  });
+        if password == password2:
+                
+            if User.objects.filter(email=email).exists():
+                messages.info(request, 'Email Taken')
+                return redirect('signup')
 
-  // Check for saved theme preference on page load
-  
-  document.addEventListener('DOMContentLoaded', (event) => {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-          document.body.classList.add(savedTheme);
-          if (savedTheme === 'dark') {
-              modeText.innerText = "Light mode";
-          } else {
-              modeText.innerText = "Dark mode";
-          }
-      }
-  });
-  
+            elif User.objects.filter(username=username).exists():
+                messages.info(request, 'Username Taken')
+                return redirect('signup')
+        
+            else:
 
-  modeSwitch.addEventListener("click", () => {
-      if (document.body.classList.contains("dark")) {
-          document.body.classList.remove("dark");
-          localStorage.setItem('theme', '');
-          modeText.innerText = "Dark mode";
-      } else {
-          document.body.classList.add("dark");
-          localStorage.setItem('theme', 'dark');
-          modeText.innerText = "Light mode";
-      }
-  });
-    </script>
-    
-</body>
-</html>
+                user = User.objects.create_user(username=username, email=email, password=password, first_name=firstName, last_name=lastName)
+                user.save()
+
+                user_login = auth.authenticate(username=username, password=password)
+                auth.login(request, user_login)
+
+                user_model = User.objects.get(username=username)
+                new_profile = Profile.objects.create(user=user_model, id_user=user_model.id)
+                new_profile.save()
+
+                return redirect('index')
+
+        else:
+            messages.info(request, 'Passwords do not Match')
+            return redirect('signup')
+
+    else:
+        return render(request, 'signup.html')
+
+def playground(request):
+    percentage_year = pie_graph_data(user_transactions_year)
+    profile = request.user.username
+    user_transactions_month = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time')
+    user_transactions_year = Transactions.objects.filter(profile=profile, date__year=date.today().year).order_by('-time')
+    user_transactions_len = len(user_transactions_month)
+    user_subscriptions = Subscriptions.objects.filter(profile=profile)
+    user_subscriptions_length = len(user_subscriptions)
+    yearly = bar_graph_data(user_transactions_year)
+    sub = subscription_prices(user_subscriptions)
+    pie_graph = pie_graph_data(user_transactions_month)
+    total_year, total_subscription, total_monthly, monthly_subscription, total = check_yearly_spending(user_transactions_year, user_subscriptions, user_transactions_month)
+    percentage_year = pie_graph_data(user_transactions_year)
+
+    context = {
+        "username": profile, # Profile
+        "transactions": user_transactions_month, # Transactions for the month
+        'categories': pie_graph, # Pie graph data
+        'subscriptions': user_subscriptions, # All subscriptions
+        'num_subscriptions': user_subscriptions_length, # Number of subscriptions
+        'yearly': yearly, # Total Year spending
+        'month': all_months[date.today().month -1], # The month
+        'year': date.today().year,
+        'num_transactions': user_transactions_len,
+        'total_year': total_year, # Total 
+        'total_sub': total_subscription, # 
+        'total_monthly': total_monthly, # 
+        'monthly_subs': monthly_subscription, # Total spending for subscriptions
+        'percentage_yearly': percentage_year
+}
+
+    return render(request, 'playground.html', context)
