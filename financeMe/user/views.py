@@ -56,6 +56,31 @@ def temp(profile):
             new_csv.csvfile.save(file_name, new_csv)
 """
 
+def get_budgets(profile, user_transactions):
+    food = profile.food_budget
+    util = profile.utilities_budget
+    others = profile.others_budget
+    clothes = profile.clothing_budget
+    transport = profile.transport_budget
+    
+    dicts = {
+        'Food': 0,
+        'Transportation': 0,
+        'Clothing': 0,
+        'Utilities': 0,
+        'Vacation': 0,
+        'Others': 0   
+        }
+    
+    if len(user_transactions) != 0:
+        for i in user_transactions: # To add the amount made to each
+            dicts[i.category] += i.amount
+
+    return (food, util, others, clothes, transport, dicts)
+
+def store_distribution(transactions):
+    pass
+
 def check_yearly_spending(all_transaction, all_subscriptions, monthly_spend): #Checks yearly spending on transactions + subscriptions + combined
 
     total = 0
@@ -84,14 +109,6 @@ def setBudget(request, profile): # WIP Sets a budget or edits budget
     amount = request.POST.get('amount')
 
     return profile.food_budget
-
-"""
-def displayBudget(profile):
-    budgets = Budget.objects.filter(profile=profile)
-"""
-
-def compare_budget(): # WIP compares current spending with budget
-    pass
 
 def recent_stores(transactions): # Gets current month transactions
     le = len(transactions)
@@ -224,16 +241,19 @@ def settings(request):
             new_transport_budget = request.POST.get('transport', None)
 
             # Update the budgets if they are valid
-            if new_food_budget and new_food_budget.isdigit() and int(new_food_budget) > 0:
-                profile_model.food_budget = int(new_food_budget)
+            if new_food_budget and new_food_budget.isdigit():
+                if int(new_food_budget) == 0:
+                    profile_model.food_budget = 0
+                else:
+                    profile_model.food_budget = int(new_food_budget)
 
-            if new_clothing_budget and new_clothing_budget.isdigit() and int(new_clothing_budget) > 0:
+            if new_clothing_budget and new_clothing_budget.isdigit():
                 profile_model.clothing_budget = int(new_clothing_budget)
 
-            if new_util_budget and new_util_budget.isdigit() and int(new_util_budget) > 0:
+            if new_util_budget and new_util_budget.isdigit():
                 profile_model.utilities_budget = int(new_util_budget)
 
-            if new_transport_budget and new_transport_budget.isdigit() and int(new_transport_budget) > 0:
+            if new_transport_budget and new_transport_budget.isdigit():
                 profile_model.transport_budget = int(new_transport_budget)
 
             profile_model.save()
@@ -297,6 +317,7 @@ def check_transactions(request):
     pie_graph = pie_graph_data(user_transactions_month) # Data for pie graph (current month)
     percentage_year = pie_graph_data(user_transactions_year) # Data for pie graph (year)
     total_year, total_subscription, total_monthly, monthly_subscription, total = check_yearly_spending(user_transactions_year, user_subscriptions, user_transactions_month)
+    food, util, others, clothes, transport, this_dict = get_budgets(profile_model, user_transactions_month)
 
     context = {
         "username": profile, # Profile
@@ -313,7 +334,12 @@ def check_transactions(request):
         'total_monthly': total_monthly, # 
         'monthly_subs': monthly_subscription, # Total spending for subscriptions
         'percentage_yearly': percentage_year,
-        'food_budget': profile_model.clothing_budget
+        'food': food, 
+        'util': util,
+        'others': others, 
+        'clothes': clothes,
+        'transport': clothes,
+        'this_dicts': this_dict,
     }
 
     return render(request, 'profile.html', context)
