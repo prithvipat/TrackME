@@ -96,7 +96,7 @@
                 <h2 class='headers'>Active Subscriptions: {{num_subscriptions}} ${{monthly_subs}}/Month</h2>
                 <div class='hh2'>
                     {% for i in subscriptions %}
-                    <li class='jj'><p>{{i.organization}} </p></li>
+                    <li class='jj'><p>{{i.organization}}: ${{i.price}}/Month </p></li>
                     {% endfor %}
                 </div>
             </ul>
@@ -115,7 +115,29 @@
             <canvas id='yearly-bar-chart'></canvas>
         </div>
 
+        <p>{{food_budget}}</p>
+
     </div>
+
+    <div class='all-budgets'>
+        {% if food > 0 %}
+        <p>Food-Budget: &nbsp &nbsp &nbsp &nbsp &nbsp  ${{this_dicts.Food}} | ${{food}}</p>
+        {% endif%}
+        {% if clothes > 0 %}
+        <p>Clothing-Budget: &nbsp &nbsp ${{this_dicts.Clothing}} | ${{clothes}}</p>
+        {% endif%}
+        {% if transport > 0 %}
+        <p>Transport-Budget: &nbsp ${{this_dicts.Transportation}} | ${{transport}}</p>
+        {% endif%}
+        {% if util > 0 %}
+        <p>Utilities-Budget: &nbsp &nbsp &nbsp &nbsp${{this_dicts.Utilities}} | ${{util}}</p>
+        {% endif %}
+        {% if others > 0 %}
+        <p>Others-Budget :&nbsp &nbsp ${{this_dicts.Others}} | ${{others}}</p>
+        {% endif%}
+    </div>
+
+    <a class='settings'href="/settings"> Settings</a>
 
     <script> 
         // Pie / Doughnut Chart
