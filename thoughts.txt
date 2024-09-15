@@ -30,14 +30,12 @@ API:
     - Chart.JS
     - PLAID (Trusted Banking API)
 
-
 Need to do:
     - API
         - News
         - PLAID
 
     - Features
-        - Allow user to see spending disparity in profile page
         - Allow user to download a csv file each year  
             - also upload to django database
             - Delete all previous year data keep csv file instead
@@ -56,14 +54,16 @@ Need to do:
         - Apply to news api and find current news based on spending habits
         - Ways to save money
 
-    - Others:
+
+    - Coding Realted:
         - Name the variables better you donkey
-        - 
+        - CSS is dookie, wrf r u doing w it
 
 Done
-    - Charts
+    - Charts 
     - General Saving of Transactions
     - Subscriptions payments monthly
-    - 
+    - Able to change/set and see budget
+    - Allow user to see spending disparity over the month or year
 
 TrackME -> Track M(My) E(Expenses) ;)
