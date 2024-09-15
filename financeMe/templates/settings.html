@@ -5,23 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
-
+    <link rel="stylesheet" href="{% static 'css/settings.css' %}">    
+</head>
+<body>
     <form action="" method='POST'>
         {% csrf_token %}
         <input type="hidden" name='action' value='budgets'>
-        Food: <input type="integer" name ='food' placeholder={{food_budget}}>
-        Clothing: <input type="integer" name ='clothes' placeholder={{clothing_budget}}>
-        Utilities: <input type="integer" name ='util' placeholder={{utilities_budget}}>
-        Transportation: <input type="integer" name ='transport' placeholder={{transport_budget}}>
-        Others: <input type="text" placeholder={{others_budget}}>
+        <input id='budgets-input' type="integer" name ='food' placeholder={{food_budget}}>
+        <input id='budgets-input2' type="integer" name ='clothes' placeholder={{clothing_budget}}>
+        <input id='budgets-input' type="integer" name ='util' placeholder={{utilities_budget}}>
+        <input id='budgets-input' type="integer" name ='transport' placeholder={{transport_budget}}>
+        <input id='budgets-input' type="text" placeholder={{others_budget}}>
 
-        <button type='submit'>Save</button>
+        <button id='budgets-btn' class='budgets-btn' type='submit'>Save</button>
     </form>
-</head>
-<body>
 
-    <script>
+    <script> // Functonality --> Shows the button if the user changes 
+        const inputs = document.getElementById(['budgets-input', 'budgets-input2'])
+        const btn = document.getElementById('budgets-btn')
 
+        inputs.addEventListener('input', function() {
+            if (inputs.value !== "") {
+                btn.style.display = 'inline-block';
+            }
+        });
     </script>
     
 </body>
