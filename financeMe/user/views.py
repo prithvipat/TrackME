@@ -239,13 +239,11 @@ def settings(request):
             new_clothing_budget = request.POST.get('clothes', None)
             new_util_budget = request.POST.get('util', None)
             new_transport_budget = request.POST.get('transport', None)
+            new_others_budget = request.POST.get('others', None)
 
             # Update the budgets if they are valid
             if new_food_budget and new_food_budget.isdigit():
-                if int(new_food_budget) == 0:
-                    profile_model.food_budget = 0
-                else:
-                    profile_model.food_budget = int(new_food_budget)
+                profile_model.food_budget = int(new_food_budget)
 
             if new_clothing_budget and new_clothing_budget.isdigit():
                 profile_model.clothing_budget = int(new_clothing_budget)
@@ -255,6 +253,9 @@ def settings(request):
 
             if new_transport_budget and new_transport_budget.isdigit():
                 profile_model.transport_budget = int(new_transport_budget)
+            
+            if new_others_budget and new_others_budget.isdigit():
+                profile_model.others_budget = int(new_others_budget)
 
             profile_model.save()
 
@@ -285,7 +286,7 @@ def make_transaction(request):
             retailer = request.POST['retailer']
             new_transaction = Transactions.objects.create(profile=profile, category=category, amount=amount, retailer=retailer)
             new_transaction.save()
-            return redirect('/')
+            return redirect('transactions')
     
         if action == 'Subscription': # To add a Subscription
             profile = request.user.username
@@ -299,7 +300,7 @@ def make_transaction(request):
             else:
                 new_subscription = Subscriptions.objects.create(profile=profile, price=amount, organization=organization)
                 new_subscription.save()
-                return redirect('/')
+                return redirect('transactions')
     
     return render(request, 'transaction.html')
 
@@ -327,7 +328,7 @@ def check_transactions(request):
         'num_subscriptions': user_subscriptions_length, # Number of subscriptions
         'bar_graph_data': yearly, # Total Year spending
         'this_month': all_months[this_month -1], # The month
-        'this_year': date.today().year,
+        'this_year': this_year,
         'num_transactions': user_transactions_len_this_month,
         'total_year': total_year, # Total 
         'total_sub': total_subscription, # 
@@ -338,7 +339,7 @@ def check_transactions(request):
         'util': util,
         'others': others, 
         'clothes': clothes,
-        'transport': clothes,
+        'transport': transport,
         'this_dicts': this_dict,
     }
 
@@ -368,7 +369,6 @@ def login(request):
 def signup(request):
 
     if request.method == "POST":
-        username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password1']
         password2 = request.POST['password2']
@@ -376,24 +376,19 @@ def signup(request):
         lastName = request.POST['lastName']
 
         if password == password2:
-                
             if User.objects.filter(email=email).exists():
                 messages.info(request, 'Email Taken')
-                return redirect('signup')
-
-            elif User.objects.filter(username=username).exists():
-                messages.info(request, 'Username Taken')
                 return redirect('signup')
         
             else:
 
-                user = User.objects.create_user(username=username, email=email, password=password, first_name=firstName, last_name=lastName)
+                user = User.objects.create_user(username=email, password=password, first_name=firstName, last_name=lastName)
                 user.save()
 
-                user_login = auth.authenticate(username=username, password=password)
+                user_login = auth.authenticate(username=email, password=password)
                 auth.login(request, user_login)
 
-                user_model = User.objects.get(username=username)
+                user_model = User.objects.get(username=email)
                 new_profile = Profile.objects.create(user=user_model, id_user=user_model.id)
                 new_profile.save()
 
