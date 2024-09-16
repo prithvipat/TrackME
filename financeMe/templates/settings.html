@@ -8,27 +8,41 @@
     <link rel="stylesheet" href="{% static 'css/settings.css' %}">    
 </head>
 <body>
+
+    <a href="/profile">Profile</a>
+
     <form action="" method='POST'>
         {% csrf_token %}
-        <input type="hidden" name='action' value='budgets'>
-        <input id='budgets-input' type="integer" name ='food' placeholder={{food_budget}}>
-        <input id='budgets-input2' type="integer" name ='clothes' placeholder={{clothing_budget}}>
-        <input id='budgets-input' type="integer" name ='util' placeholder={{utilities_budget}}>
-        <input id='budgets-input' type="integer" name ='transport' placeholder={{transport_budget}}>
-        <input id='budgets-input' type="text" placeholder={{others_budget}}>
+        <div class='coolinput'>
+            <input type="hidden" name='action' value='budgets'>
+            <label for="food" class='text'>Food:</label>
+            <input name='food' id='budgets-input' type="integer" placeholder={{food_budget}} class='input'>
+            
+            <label for="clothes" class='text'>Clothing:</label>
+            <input class='input' id='budgets-input2' type="integer" name='clothes' placeholder={{clothing_budget}}>
 
+            <label for="util" class='text'>Utilities:</label>
+            <input class='input' id='budgets-input3' type="integer" name ='util' placeholder={{utilities_budget}}>
+
+            <label for="transport" class='text'>Transportation:</label>
+            <input class='input' id='budgets-input4' type="integer" name ='transport' placeholder={{transport_budget}}>
+
+            <label for="others" class='text'>Clothing:</label>
+            <input class='input' id='budgets-input5' type="integer" name='others' placeholder={{others_budget}}>
+        </div>
         <button id='budgets-btn' class='budgets-btn' type='submit'>Save</button>
     </form>
 
-    <script> // Functonality --> Shows the button if the user changes 
-        const inputs = document.getElementById(['budgets-input', 'budgets-input2'])
-        const btn = document.getElementById('budgets-btn')
+    <script> // Functonality --> Shows the button if the user changes anything
 
-        inputs.addEventListener('input', function() {
-            if (inputs.value !== "") {
+        let elementArray = document.querySelectorAll("input");
+        let btn = document.getElementById('budgets-btn')
+        elementArray.forEach(function(elem) {
+            elem.addEventListener('input', function() {
                 btn.style.display = 'inline-block';
-            }
+            });
         });
+
     </script>
     
 </body>
