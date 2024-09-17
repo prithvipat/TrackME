@@ -11,6 +11,7 @@ this_year = date.today().year
 this_month = date.today().month
 this_day = date.today().day
 
+
 all_months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 CATEGORY_CHOICES = ['Food','Transportation', 'Clothing', 'Utilities','Vacation', 'Others']
 """
@@ -55,6 +56,7 @@ def temp(profile):
             new_csv = CSVFiles.objects.create(profile=profile)
             new_csv.csvfile.save(file_name, new_csv)
 """
+
 
 def get_budgets(profile, user_transactions):
     food = profile.food_budget
@@ -301,6 +303,14 @@ def make_transaction(request):
                 new_subscription = Subscriptions.objects.create(profile=profile, price=amount, organization=organization)
                 new_subscription.save()
                 return redirect('transactions')
+
+        if action == 'Reaccuring Transactions':
+            profile = request.user.username
+            purchase = request.POST['purchase']
+            amount = request.POST['amount']
+
+            
+
     
     return render(request, 'transaction.html')
 
@@ -445,3 +455,13 @@ def playground(request):
 
         return render(request, 'playground.html', context)
 
+def delete_transactions(request, event_id):
+    event = Transactions.objects.get(transaction_id=event_id)
+    event.delete()
+    return redirect('profile')
+
+def delete_subscription(request, event_id):
+    profile = request.user.username
+    event = Subscriptions.objects.get(profile=profile, organization=event_id)
+    event.delete()
+    return redirect('profile')
