@@ -81,64 +81,70 @@
         </div>
     </nav>
 
-    <div class='user-info'>
-        <div class='transactions_made'>
-            <ul class = 'hh'>
-                <h2>{{month}} Transactions: {{num_transactions}}&nbsp &nbsp${{total_monthly}}</h2>
-                {% for t in transactions %}
-                <li class='jj'><p>{{t.retailer}}: ${{t.amount}} - {{t.date}}</p></li>
-                {% endfor %}
-            </ul>
+    <div class='all'>
+
+        <div class='charts'>
+            <div class='pie-chart' id='container' style="width: 20%;">
+                <canvas id='pie-chart'></canvas>
+            </div>
+            <div class='select-box'>
+                <select id='time'>
+                    <option value='month'>Month</option>
+                    <option value='year'>Year</option>
+                </select>
+            </div>
+
+            <div class='bar-chart-yearly'>
+                <canvas id='yearly-bar-chart' width=500></canvas>
+            </div>
+
+            <p>{{food_budget}}</p>
+
         </div>
 
-        <div class='subscriptions_made'>
-            <ul class='hh'>
-                <h2 class='headers'>Active Subscriptions: {{num_subscriptions}} ${{monthly_subs}}/Month</h2>
-                <div class='hh2'>
-                    {% for i in subscriptions %}
-                    <li class='jj'><p>{{i.organization}}: ${{i.price}}/Month </p></li>
+        <div class='these-budgets'>
+
+        <div class='all-budgets'>
+            {% if food > 0 %}
+            <p>Food-Budget: &nbsp &nbsp &nbsp &nbsp &nbsp  ${{this_dicts.Food}} | ${{food}}</p>
+            {% endif%}
+            {% if clothes > 0 %}
+            <p>Clothing-Budget: &nbsp &nbsp ${{this_dicts.Clothing}} | ${{clothes}}</p>
+            {% endif%}
+            {% if transport > 0 %}
+            <p>Transport-Budget: &nbsp ${{this_dicts.Transportation}} | ${{transport}}</p>
+            {% endif%}
+            {% if util > 0 %}
+            <p>Utilities-Budget: &nbsp &nbsp &nbsp &nbsp${{this_dicts.Utilities}} | ${{util}}</p>
+            {% endif %}
+            {% if others > 0 %}
+            <p>Others-Budget :&nbsp &nbsp &nbsp &nbsp ${{this_dicts.Others}} | ${{others}}</p>
+            {% endif%}
+        </div>
+
+        <div class='things'>
+
+            <div class='transactions_made'>
+                <ul class = 'hh'>
+                    <h2>{{this_month}} Expenses / {{num_transactions}} </h2>
+                    {% for t in transactions %}
+                    <li class='jj'><a class='delete_link' href="{% url 'delete_transactions' t.transaction_id %}"><p>{{t.retailer}}: ${{t.amount}} - {{t.date}} </p></a></li>
                     {% endfor %}
-                </div>
-            </ul>
-        </div>
-        <div class='pie-chart' id='container' style="width: 20%;">
-            <canvas id='pie-chart'></canvas>
-        </div>
-        <div class='select-box'>
-            <select id='time'>
-                <option value='month'>Month</option>
-                <option value='year'>Year</option>
-            </select>
-        </div>
+                </ul>
+            </div>
 
-        <div class='bar-chart-yearly'>
-            <canvas id='yearly-bar-chart'></canvas>
+            <div class='subscriptions_made'>
+                <ul class='hh'>
+                    <h2 class='headers'>Subscriptions / {{num_subscriptions}}</h2>
+                    <div class='hh2'>
+                        {% for i in subscriptions %}
+                        <li class='jj'><a class='delete_link' href="{% url 'delete_subscription' i.organization %}"><p>{{i.organization}}: ${{i.price}}/Month </p></a></li>
+                        {% endfor %}
+                    </div>
+                </ul>
+            </div>
         </div>
-
-        <p>{{food_budget}}</p>
-
     </div>
-
-    <div class='all-budgets'>
-        {% if food > 0 %}
-        <p>Food-Budget: &nbsp &nbsp &nbsp &nbsp &nbsp  ${{this_dicts.Food}} | ${{food}}</p>
-        {% endif%}
-        {% if clothes > 0 %}
-        <p>Clothing-Budget: &nbsp &nbsp ${{this_dicts.Clothing}} | ${{clothes}}</p>
-        {% endif%}
-        {% if transport > 0 %}
-        <p>Transport-Budget: &nbsp ${{this_dicts.Transportation}} | ${{transport}}</p>
-        {% endif%}
-        {% if util > 0 %}
-        <p>Utilities-Budget: &nbsp &nbsp &nbsp &nbsp${{this_dicts.Utilities}} | ${{util}}</p>
-        {% endif %}
-        {% if others > 0 %}
-        <p>Others-Budget :&nbsp &nbsp ${{this_dicts.Others}} | ${{others}}</p>
-        {% endif%}
-    </div>
-
-    <a class='settings'href="/settings"> Settings</a>
-
     <script> 
         // Pie / Doughnut Chart
         var ctx = document.getElementById('pie-chart').getContext('2d');
@@ -168,7 +174,7 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Spending Disparity: {{month}} {{year}}'
+                        text: 'Spending Disparity: {{this_month}}'
                     },
                     legend: {
                         position: 'bottom'
@@ -191,7 +197,7 @@
                     {{ percentage_yearly.Vacation }},
                     {{ percentage_yearly.Others }},
                 ];
-                pieChart.options.plugins.title.text = 'Spending Disparity: {{year}}';
+                pieChart.options.plugins.title.text = 'Spending Disparity: {{this_year}}';
             } 
             
             else {
@@ -203,7 +209,7 @@
                     {{ categories.Vacation }},
                     {{ categories.Others }},
                 ];
-                pieChart.options.plugins.title.text = 'Spending Disparity: {{ month }} {{ year }}';
+                pieChart.options.plugins.title.text = 'Spending Disparity: {{this_month}} {{ this_year }}';
             }
             pieChart.update();
         });
