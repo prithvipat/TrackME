@@ -30,8 +30,18 @@
             <label for="others" class='text'>Clothing:</label>
             <input autocomplete="off" class='input' id='budgets-input5' type="integer" name='others' placeholder={{others_budget}}>
         </div>
-        <button id='budgets-btn' class='budgets-btn' type='submit'>Save</button>
+
+        <div class='money'>
+
+            <input type="text" name='cashflow'>
+            <input type="text" name='pocket'>
+
+        </div>
+
+        <button id='budgets-btn' class='budgets-btn' type='submit'>Update</button>
     </form>
+
+    <a href="/delete">Delete Account</a>
 
     <script> // Functonality --> Shows the button if the user changes anything
 
