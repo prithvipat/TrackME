@@ -57,7 +57,7 @@ def temp(profile):
             new_csv.csvfile.save(file_name, new_csv)
 """
 
-
+# Helper Functions
 def get_budgets(profile, user_transactions):
     food = profile.food_budget
     util = profile.utilities_budget
@@ -200,6 +200,7 @@ def pie_graph_data(user_transactions): # Gets data for Pie chart
     else:
         return dicts
 
+# Main Functions
 @login_required(login_url='login')
 def index(request): # Main page
     profile = request.user.username
