@@ -8,7 +8,7 @@ from datetime import date, timedelta
 import pandas as pd
 import csv
 this_year = date.today().year
-this_month = date.today().month
+this_month = date.today().month + 1
 this_day = date.today().day
 
 
@@ -243,7 +243,10 @@ def settings(request):
             new_transport_budget = request.POST.get('transport', None)
             new_others_budget = request.POST.get('others', None)
 
-            # Update the budgets if they are valid
+            cashflow = request.POST.get('cashflow', None)
+            balance = request.POST.get('pocket', None)
+
+            # Update the budgets and stuff if they are valid
             if new_food_budget and new_food_budget.isdigit():
                 profile_model.food_budget = int(new_food_budget)
 
@@ -258,6 +261,12 @@ def settings(request):
             
             if new_others_budget and new_others_budget.isdigit():
                 profile_model.others_budget = int(new_others_budget)
+            
+            if cashflow and cashflow.isdigit():
+                profile_model.cash_flow = int(cashflow)
+            
+            if balance and balance.isdigit():
+                profile_model.balance = int(balance)
 
             profile_model.save()
 
@@ -304,14 +313,6 @@ def make_transaction(request):
                 new_subscription.save()
                 return redirect('transactions')
 
-        if action == 'Reaccuring Transactions':
-            profile = request.user.username
-            purchase = request.POST['purchase']
-            amount = request.POST['amount']
-
-            
-
-    
     return render(request, 'transaction.html')
 
 @login_required(login_url='login')
@@ -352,6 +353,32 @@ def check_transactions(request):
         'transport': transport,
         'this_dicts': this_dict,
     }
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'Transaction':
+            profile = request.user.username
+            categoryNum = request.POST['category']
+            category = CATEGORY_CHOICES[int(categoryNum)-1]
+            amount = request.POST.get('amount')
+            retailer = request.POST.get('retail')
+            new_transaction = Transactions.objects.create(profile=profile, category=category, amount=amount, retailer=retailer)
+            new_transaction.save()
+            return redirect('profile')
+        
+        if action == 'Subscription': # To add a Subscription
+            profile = request.user.username
+            amount = request.POST.get('amount')
+            organization = request.POST.get('organization')
+
+            if Subscriptions.objects.filter(profile=profile, organization=organization).exists():
+                messages.info(request,f'You already have a {organization} subscription')
+                return redirect('profile')
+            
+            else:
+                new_subscription = Subscriptions.objects.create(profile=profile, price=amount, organization=organization)
+                new_subscription.save()
+                return redirect('profile')
 
     return render(request, 'profile.html', context)
 
@@ -369,11 +396,11 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             return redirect('/')
-                
+                 
         else:
             messages.info(request, 'Credentials Invalid')
             return redirect('login')
-    
+
     return render(request, 'login.html')
 
 def signup(request):
@@ -412,48 +439,44 @@ def signup(request):
         return render(request, 'signup.html')
 
 def playground(request):
-    profile = request.user.username  # Profile Username
-    user_object = User.objects.get(username=profile)  # Get the user model
-    profile_model = Profile.objects.get(user=user_object)  # Get the profile model
+    profile = request.user.username # Profile Username
+    user_object = User.objects.get(username=profile) # Gets the user Model
+    profile_model = Profile.objects.get(user=user_object) # Gets the profile Model
+    user_transactions_month = Transactions.objects.filter(profile=profile, date__month=date.today().month).order_by('-time') # Transactions for the month
+    user_transactions_year = Transactions.objects.filter(profile=profile, date__year=date.today().year) # Transactions for the year
+    user_transactions_len_this_month = len(user_transactions_month) # Number of transactions this month
+    user_subscriptions = Subscriptions.objects.filter(profile=profile) # All subscriptions
+    user_subscriptions_length = len(user_subscriptions) # Number of subscriptions
+    yearly = bar_graph_data(user_transactions_year) # Data for bar graph
+    pie_graph = pie_graph_data(user_transactions_month) # Data for pie graph (current month)
+    percentage_year = pie_graph_data(user_transactions_year) # Data for pie graph (year)
+    total_year, total_subscription, total_monthly, monthly_subscription, total = check_yearly_spending(user_transactions_year, user_subscriptions, user_transactions_month)
+    food, util, others, clothes, transport, this_dict = get_budgets(profile_model, user_transactions_month)
 
-    if request.method == 'POST':
-        action = request.POST.get('action')
-
-        if action == 'budget':
-
-            # Get the values from the form, set a default of None if a field is empty
-            new_food_budget = request.POST.get('food', None)
-            new_clothing_budget = request.POST.get('clothes', None)
-            new_util_budget = request.POST.get('util', None)
-            new_transport_budget = request.POST.get('transport', None)
-
-            # Update the budgets if they are valid
-            if new_food_budget and new_food_budget.isdigit() and int(new_food_budget) > 0:
-                profile_model.food_budget = int(new_food_budget)
-
-            if new_clothing_budget and new_clothing_budget.isdigit() and int(new_clothing_budget) > 0:
-                profile_model.clothing_budget = int(new_clothing_budget)
-
-            if new_util_budget and new_util_budget.isdigit() and int(new_util_budget) > 0:
-                profile_model.utilities_budget = int(new_util_budget)
-
-            if new_transport_budget and new_transport_budget.isdigit() and int(new_transport_budget) > 0:
-                profile_model.transport_budget = int(new_transport_budget)
-
-            profile_model.save()
-
-            return redirect('playground')
-
-    else:
-        context = {
-            'food_budget': profile_model.food_budget,
-            'clothing_budget': profile_model.clothing_budget,
-            'utilities_budget': profile_model.utilities_budget,
-            'transport_budget': profile_model.transport_budget,
-            'others_budget': profile_model.others_budget,
-        }
-
-        return render(request, 'playground.html', context)
+    context = {
+        "username": profile, # Profile
+        "transactions": user_transactions_month, # Transactions for the month
+        'categories': pie_graph, # Pie graph data
+        'subscriptions': user_subscriptions, # All subscriptions
+        'num_subscriptions': user_subscriptions_length, # Number of subscriptions
+        'bar_graph_data': yearly, # Total Year spending
+        'this_month': all_months[this_month -1], # The month
+        'this_year': this_year,
+        'num_transactions': user_transactions_len_this_month,
+        'total_year': total_year, # Total 
+        'total_sub': total_subscription, # 
+        'total_monthly': total_monthly, # 
+        'monthly_subs': monthly_subscription, # Total spending for subscriptions
+        'percentage_yearly': percentage_year,
+        'food': food, 
+        'util': util,
+        'others': others, 
+        'clothes': clothes,
+        'transport': transport,
+        'this_dicts': this_dict,
+    }
+        
+    return render(request, 'playground.html', context)
 
 def delete_transactions(request, event_id):
     event = Transactions.objects.get(transaction_id=event_id)
@@ -465,3 +488,21 @@ def delete_subscription(request, event_id):
     event = Subscriptions.objects.get(profile=profile, organization=event_id)
     event.delete()
     return redirect('profile')
+
+def delete_profile(request):
+    profile = request.user.username  # Profile Username
+    user_object = User.objects.get(username=profile)  # Get the user model
+    profile_model = Profile.objects.get(user=user_object)  # Get the profile model
+    transaction = Transactions.objects.filter(profile=profile)
+    subscriptions = Subscriptions.objects.filter(profile=profile)
+
+    auth.logout(request)
+    for i in transaction:
+        i.delete()
+
+    for i in subscriptions:
+        i.delete()
+
+    profile_model.delete()
+    user_object.delete()
+    return redirect('/login')
