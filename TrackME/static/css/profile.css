@@ -306,7 +306,6 @@ body.dark .home .text{
     list-style-type: none;
     border: solid;
     width: 350px;
-    border-radius: 10px;
     border-width: 2px;
     box-shadow: none;
     margin:10px;
@@ -325,11 +324,10 @@ body.dark .home .text{
 }
 
 .settings {
-    margin-top: 20px;
+
     justify-content: center;
     align-items: center;
     display: flex;
-    width: 100px;
 }
 
 .things {
@@ -347,10 +345,35 @@ body.dark .home .text{
 .delete_link:hover {
     text-decoration: line-through;
     color: red;
+    cursor: pointer;
 }
 
 .delete_link {
     color: black;
     display: grid;
-    
+}
+.transactions_made {
+    margin-top: 33px;
+}
+
+.add_transaction, .add_subsscription {
+    display: none;
+}
+
+.plus_button {
+    background-color: white;
+    border: none;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+#cancel2, #cancel {
+    border: none;
+    background-color: white;
+}
+
+.show {
+    display: inline-block;
 }
