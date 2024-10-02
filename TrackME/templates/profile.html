@@ -8,7 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="{% static 'css/playground.css' %}">    
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">  
+  
 
 </head>
 <body>
@@ -97,19 +98,19 @@
 
         <div class='all-budgets'>
             {% if food > 0 %}
-            <p>Food-Budget: &nbsp &nbsp &nbsp &nbsp &nbsp  ${{this_dicts.Food}} | ${{food}}</p>
+            <p class='budget_'>Food-Budget: &nbsp &nbsp &nbsp &nbsp &nbsp  ${{this_dicts.Food}} | ${{food}}</p>
             {% endif%}
             {% if clothes > 0%}
-            <p>Clothing-Budget: &nbsp &nbsp ${{this_dicts.Clothing}} | ${{clothes}}</p>
+            <p class='budget_'>Clothing-Budget: &nbsp &nbsp ${{this_dicts.Clothing}} | ${{clothes}}</p>
             {% endif%}
             {% if transport > 0 %}
-            <p>Transport-Budget: &nbsp ${{this_dicts.Transportation}} | ${{transport}}</p>
+            <p class='budget_'>Transport-Budget: &nbsp ${{this_dicts.Transportation}} | ${{transport}}</p>
             {% endif%}
             {% if util > 0 %}
-            <p>Utilities-Budget: &nbsp &nbsp &nbsp &nbsp${{this_dicts.Utilities}} | ${{util}}</p>
+            <p class='budget_'>Utilities-Budget: &nbsp &nbsp &nbsp &nbsp${{this_dicts.Utilities}} | ${{util}}</p>
             {% endif %}
             {% if others > 0 %}
-            <p>Others-Budget :&nbsp &nbsp &nbsp &nbsp ${{this_dicts.Others}} | ${{others}}</p>
+            <p class='budget_'>Others-Budget :&nbsp &nbsp &nbsp &nbsp ${{this_dicts.Others}} | ${{others}}</p>
             {% endif%}
         </div>
 
@@ -122,8 +123,8 @@
                     <form action="" method='POST'>
                         {% csrf_token %}
                         <input type="hidden" name='action' value='Transaction'>
-                        <input class='add_transaction' type="text" placeholder='retailer' name='retail'>
-                        <input class='add_transaction' type="text" placeholder='amount' name='amount'>
+                        <input class='add_transaction' type="text" placeholder='Retailer' name='retail'>
+                        <input autocomplete='off' class='add_transaction' type="text" placeholder='amount' name='amount'>
                         <select class='add_transaction' name="category">
                             <option value="0">What did you buy?</option>
                             <option value="1">Food</option>
@@ -135,6 +136,7 @@
                         </select>
                         <button class='add_transaction' type='submit'>Submit</button>
                     </form>
+                    <button class='add_transaction' id='cancel'><i class='bx bx-x'></i></button>
                     {% for t in transactions %}
                     <li class='jj'><a class='delete_link' href="{% url 'delete_transactions' t.transaction_id %}">{{t.retailer}}: ${{t.amount}} - {{t.date}}</a></li>
                     {% endfor %}
@@ -148,10 +150,11 @@
                     <form action="" method='POST'>
                         {% csrf_token %}
                         <input type="hidden" name='action' value='Subscription'>
-                        <input class='add_subsscription' type="text" placeholder='Organization' name='organization'>
-                        <input class='add_subsscription' type="text" placeholder='amount' name='amount'>
+                        <input autocomplete='off' class='add_subsscription' type="text" placeholder='Organization' name='organization'>
+                        <input autocomplete='off'class='add_subsscription' type="text" placeholder='amount' name='amount'>
                         <button class='add_subsscription' type='submit'>Submit</button>
                     </form>
+                    <button class='add_subsscription' id='cancel2'><i class='bx bx-x'></i></button>
                     {% for i in subscriptions %}
                     <li class='jj'><a class='delete_link' href="{% url 'delete_subscription' i.organization %}">{{i.organization}}: ${{i.price}}/Month</a></li>
                     {% endfor %}
@@ -181,7 +184,7 @@
                 datasets: [{
                     data: monthlyData,
                     backgroundColor: [
-                        '#006769', '#40A578', '#9DDE8B', '#E6FF94', '#BEDC74', '#F6E96B'
+                        '#C40C0C', '#40A578', '#4B70F5', '#9BCF53', '#F2AFEF', '#F99417'
                     ],
                     label: 'Expenses'
                 }],
@@ -283,78 +286,85 @@
     
         new Chart(ctxYearly, configYearly);
     </script>
+<script>
 
-    <script>
+    // Sidebar toggle and dark mode logic
+    const body = document.querySelector('body'),
+    sidebar = body.querySelector('nav'),
+    toggle = body.querySelector(".toggle"),
+    modeSwitch = body.querySelector(".toggle-switch"),
+    modeText = body.querySelector(".mode-text");
 
-        const body = document.querySelector('body'),
-        sidebar = body.querySelector('nav'),
-        toggle = body.querySelector(".toggle"),
-        modeSwitch = body.querySelector(".toggle-switch"),
-        modeText = body.querySelector(".mode-text");
+    toggle.addEventListener("click", () => {
+        sidebar.classList.toggle("close");
+    });
 
-        toggle.addEventListener("click", () => {
-            sidebar.classList.toggle("close");
-        });
+    searchBtn.addEventListener("click", () => {
+        sidebar.classList.remove("close");
+    });
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.remove("close");
-        });
+    // Check for saved theme preference on page load
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.classList.add(savedTheme);
 
-  // Check for saved theme preference on page load
-  
-  document.addEventListener('DOMContentLoaded', (event) => {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-          document.body.classList.add(savedTheme);
-
-          if (savedTheme === 'dark') {
-              modeText.innerText = "Light mode";
-          } 
-          
-          else {
-              modeText.innerText = "Dark mode";
-          }
-      }
-  });
-  
-
-  modeSwitch.addEventListener("click", () => {
-      if (document.body.classList.contains("dark")) {
-          document.body.classList.remove("dark");
-          localStorage.setItem('theme', '');
-          modeText.innerText = "Dark mode";
-      } 
-      
-      else {
-          document.body.classList.add("dark");
-          localStorage.setItem('theme', 'dark');
-          modeText.innerText = "Light mode";
-      }
-  });
-
-    </script>
-
-    <script>
-
-        let transaction = document.getElementById('add_transaction');
-        let elementArray = document.getElementsByClassName('add_transaction');
-        
-        transaction.addEventListener('click', () => {
-            for (let i = 0; i < elementArray.length; i++) {
-                elementArray[i].style.display = 'inline-block';
+            if (savedTheme === 'dark') {
+                modeText.innerText = "Light mode";
+            } 
+            else {
+                modeText.innerText = "Dark mode";
             }
-        });
-        
-        let subscription = document.getElementById('add_subsscription');
-        let elementArray2 = document.getElementsByClassName('add_subsscription');
-        
-        subscription.addEventListener('click', () => {
-            for (let i = 0; i < elementArray.length; i++) {
-                elementArray2[i].style.display = 'inline-block';
-            }
-        });
+        }
+    });
 
-    </script>
+    modeSwitch.addEventListener("click", () => {
+        if (document.body.classList.contains("dark")) {
+            document.body.classList.remove("dark");
+            localStorage.setItem('theme', '');
+            modeText.innerText = "Dark mode";
+        } 
+        else {
+            document.body.classList.add("dark");
+            localStorage.setItem('theme', 'dark');
+            modeText.innerText = "Light mode";
+        }
+    });
+</script>
+<script>
+// Transaction form toggle
+    let transaction = document.getElementById('add_transaction');
+    let elementArray = document.getElementsByClassName('add_transaction');
+    let cancelbtn = document.getElementById('cancel');
 
+    transaction.addEventListener('click', () => {
+        for (let i = 0; i < elementArray.length; i++) {
+            elementArray[i].style.display = 'inline-block';
+        }
+    });
+
+    cancelbtn.addEventListener('click', () => {
+        for (let i = 0; i <elementArray.length; i++) {
+            elementArray[i].style.display = 'none';
+        }
+    });
+
+    let subscription = document.getElementById('add_subsscription');
+    let elementArray2 = document.getElementsByClassName('add_subsscription');
+    let cancelbtn2 = document.getElementById('cancel2');
+
+    subscription.addEventListener('click', () => {
+        for (let i = 0; i < elementArray2.length; i++) {
+            elementArray2[i].style.display = 'inline-block';
+        }
+    });
+
+    cancelbtn2.addEventListener('click', () => {
+        for (let i = 0; i<elementArray2.length; i++) {
+            elementArray2[i].style.display = 'none';
+        }
+    });
+
+</script>
 </body>
 </html>
