@@ -41,7 +41,7 @@
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="#">
+                        <a href="/news">
                             <i class='bx bx-news icon'></i>
                             <span class="text nav-text">News</span>
                         </a>
@@ -120,6 +120,7 @@
                 <ul class = 'hh'>
                     <h2>Expenses: ${{total_monthly}} </h2>
                     <button class='plus_button'><i id='add_transaction' class='bx bx-plus'></i></button>
+                    <button class='add_transaction' id='cancel'><i class='bx bx-x'></i></button>
                     <form action="" method='POST'>
                         {% csrf_token %}
                         <input type="hidden" name='action' value='Transaction'>
@@ -136,7 +137,6 @@
                         </select>
                         <button class='add_transaction' type='submit'>Submit</button>
                     </form>
-                    <button class='add_transaction' id='cancel'><i class='bx bx-x'></i></button>
                     {% for t in transactions %}
                     <li class='jj'><a class='delete_link' href="{% url 'delete_transactions' t.transaction_id %}">{{t.retailer}}: ${{t.amount}} - {{t.date}}</a></li>
                     {% endfor %}
@@ -147,6 +147,7 @@
                 <ul class='hh'>
                     <h2 class='headers'>Subscriptions: ${{monthly_subs}}</h2>
                     <button class='plus_button'><i id='add_subsscription' class='bx bx-plus'></i></button>
+                    <button class='add_subsscription' id='cancel2'><i class='bx bx-x'></i></button>
                     <form action="" method='POST'>
                         {% csrf_token %}
                         <input type="hidden" name='action' value='Subscription'>
@@ -154,7 +155,6 @@
                         <input autocomplete='off'class='add_subsscription' type="text" placeholder='amount' name='amount'>
                         <button class='add_subsscription' type='submit'>Submit</button>
                     </form>
-                    <button class='add_subsscription' id='cancel2'><i class='bx bx-x'></i></button>
                     {% for i in subscriptions %}
                     <li class='jj'><a class='delete_link' href="{% url 'delete_subscription' i.organization %}">{{i.organization}}: ${{i.price}}/Month</a></li>
                     {% endfor %}
@@ -340,12 +340,14 @@
     transaction.addEventListener('click', () => {
         for (let i = 0; i < elementArray.length; i++) {
             elementArray[i].style.display = 'inline-block';
+            transaction.style.display = 'none'
         }
     });
 
     cancelbtn.addEventListener('click', () => {
         for (let i = 0; i <elementArray.length; i++) {
             elementArray[i].style.display = 'none';
+            transaction.style.display = 'inline-block'
         }
     });
 
@@ -356,12 +358,15 @@
     subscription.addEventListener('click', () => {
         for (let i = 0; i < elementArray2.length; i++) {
             elementArray2[i].style.display = 'inline-block';
+            subscription.style.display = 'none'
         }
     });
 
     cancelbtn2.addEventListener('click', () => {
         for (let i = 0; i<elementArray2.length; i++) {
             elementArray2[i].style.display = 'none';
+            subscription.style.display = 'inline-block'
+
         }
     });
 
