@@ -7,6 +7,10 @@ import os
 from datetime import date, timedelta
 import pandas as pd
 import csv
+import random
+import json
+import requests
+
 this_year = date.today().year
 this_month = date.today().month + 1
 this_day = date.today().day
@@ -56,6 +60,20 @@ def temp(profile):
             new_csv = CSVFiles.objects.create(profile=profile)
             new_csv.csvfile.save(file_name, new_csv)
 """
+
+def get_api():
+    page = random.randint(1, 5) # Total of 5 pages
+    link = "https://newsapi.org/v2/everything?"
+    params = {
+    'apiKey': 'b2b40e6d388a4263bf8a15ad481c724e',
+    'q': '"personal finance" OR "budgeting" OR "saving money"',
+    'page': page
+    }
+
+    r = requests.get(link, params)
+    data = r.json()
+    return data
+
 
 # Helper Functions
 def get_budgets(profile, user_transactions):
@@ -484,12 +502,14 @@ def delete_transactions(request, event_id):
     event.delete()
     return redirect('profile')
 
+login_required(login_url=login)
 def delete_subscription(request, event_id):
     profile = request.user.username
     event = Subscriptions.objects.get(profile=profile, organization=event_id)
     event.delete()
     return redirect('profile')
 
+login_required(login_url=login)
 def delete_profile(request):
     profile = request.user.username  # Profile Username
     user_object = User.objects.get(username=profile)  # Get the user model
@@ -507,3 +527,35 @@ def delete_profile(request):
     profile_model.delete()
     user_object.delete()
     return redirect('/login')
+
+login_required(login_url=login)
+def news(request):
+    data = get_api()
+    article=[]
+    organized_data = {}
+    current_data = {}
+
+    for i in range(24):
+        ran = random.randint(0, 95)
+        if ran not in article:
+            article.append(ran)
+        
+        else: i -= 1
+    
+    for i in article:
+        name = data['articles'][article[i]]['source']['title']
+        print(name)
+        description = data['articles'][article[i]]['description']
+        print(description)
+        title = data['articles'][article[i]]['title']
+        author = data['articles'][article[i]]['author']
+        link = data['articles'][article[i]]['url']
+        current_data = {
+            'name': name,
+            'description': description,
+            'author': author,
+            'title': title,
+            'link': link,
+        }
+        organized_data += current_data
+    return render(request, 'news.html', data)
