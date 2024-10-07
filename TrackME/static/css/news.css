@@ -1,0 +1,26 @@
+img { 
+    width: 400px;
+    height: 300px;
+    object-fit: cover;
+}
+
+.articles {
+    display: grid;
+    height:350;
+    width: 450;
+    border: solid;
+    margin: 20px;
+    border-radius: 20px;
+}
+
+.inner-articles {
+    margin: 10px;
+}
+
+li {
+    text-decoration: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
