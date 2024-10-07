@@ -61,21 +61,8 @@ def temp(profile):
             new_csv.csvfile.save(file_name, new_csv)
 """
 
-def get_api():
-    page = random.randint(1, 5) # Total of 5 pages
-    link = "https://newsapi.org/v2/everything?"
-    params = {
-    'apiKey': 'b2b40e6d388a4263bf8a15ad481c724e',
-    'q': '"personal finance" OR "budgeting" OR "saving money"',
-    'page': page
-    }
-
-    r = requests.get(link, params)
-    data = r.json()
-    return data
-
-
 # Helper Functions
+
 def get_budgets(profile, user_transactions):
     food = profile.food_budget
     util = profile.utilities_budget
@@ -530,32 +517,53 @@ def delete_profile(request):
 
 login_required(login_url=login)
 def news(request):
-    data = get_api()
-    article=[]
-    organized_data = {}
-    current_data = {}
+    page = random.randint(1, 5) # Total of 5 pages
+    link = "https://newsapi.org/v2/everything?"
+    params = {
+    'apiKey': 'b2b40e6d388a4263bf8a15ad481c724e',
+    'q': 'saving money',
+    'page': page
+    }
 
-    for i in range(24):
-        ran = random.randint(0, 95)
-        if ran not in article:
-            article.append(ran)
-        
-        else: i -= 1
-    
-    for i in article:
-        name = data['articles'][article[i]]['source']['title']
-        print(name)
-        description = data['articles'][article[i]]['description']
-        print(description)
-        title = data['articles'][article[i]]['title']
-        author = data['articles'][article[i]]['author']
-        link = data['articles'][article[i]]['url']
+    r = requests.get(link, params)
+    data = r.json()
+
+    num_articles = len(data['articles'])
+    articles = []
+
+    # Randomly select up to 20 unique articles
+    while len(articles) < min(21, num_articles):
+        n = random.randint(0, num_articles - 1)
+        if n not in articles:
+            articles.append(n)
+
+    outer_data = []
+
+    for i in articles:
+        # Extract data for each article
+        name = data['articles'][i]['source']['name']
+        description = data['articles'][i]['description']
+        title = data['articles'][i]['title']
+        author = data['articles'][i]['author']
+        link = data['articles'][i]['url']
+        img = data['articles'][i]['urlToImage']
+
+        # Create a new dictionary for each article
         current_data = {
             'name': name,
             'description': description,
-            'author': author,
             'title': title,
+            'author': author,
             'link': link,
+            'img': img
         }
-        organized_data += current_data
-    return render(request, 'news.html', data)
+
+        outer_data.append(current_data)  # Append the new dictionary to the list
+
+    return render(request, 'news.html', {'data': outer_data})
+
+"""
+
+
+
+"""
