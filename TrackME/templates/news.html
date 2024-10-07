@@ -1,12 +1,27 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Latest News</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/news.css' %}">  
+
+
 </head>
 <body>
-
+    {% for n in data %}
+    <div class='articles'>
+        <div class='inner-articles'>
+            <li><a href="{{n.link}}">{{n.title}}</a></li>
+            <li>{{n.name}}</li>
+            <li> {{n.description}}</li>
+            <li><img src="{{n.img}}" alt=""></li>
+        </div>
+    </div>
+    {% endfor %}
     
     
 </body>
