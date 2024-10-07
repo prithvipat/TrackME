@@ -12,4 +12,5 @@ urlpatterns = [
     path('delete_subscriptions/<event_id>', views.delete_subscription, name='delete_subscription'),
     path('delete/', views.delete_profile, name='delete'),
     path('playground/', views.playground, name='playground'),
+    path('news/', views.news, name='news')
 ]
