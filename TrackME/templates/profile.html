@@ -47,9 +47,15 @@
                         </a>
                     </li>
                     <li class="nav-link">
+                        <a href="/settings">
+                            <i class='bx bx-cog icon'></i>
+                            <span class="text nav-text">Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
                         <a href="#">
-                            <i class='bx bx-bell icon'></i>
-                            <span class="text nav-text">Account Actions</span>
+                            <i class='bx bx-plus-circle icon'></i>
+                            <span class="text nav-text">Tips</span>
                         </a>
                     </li>
                 </ul>
@@ -78,15 +84,15 @@
     <div class='all'>
 
         <div class='charts'>
-            <div class='pie-chart' id='container' style="width: 20%;">
+            <div class='pie-chart' id='container'>
                 <canvas id='pie-chart'></canvas>
-            </div>
-            <div class='select-box'>
-                <select id='time'>
-                    <option value='month'>Month</option>
-                    <option value='year'>Year</option>
-                </select>
-            </div>
+                <div class='select-box'>
+                    <select id='time'>
+                        <option value='month'>Month</option>
+                        <option value='year'>Year</option>
+                    </select>
+                </div>
+            </div>            
 
             <div class='bar-chart-yearly'>
                 <canvas id='yearly-bar-chart' width=500></canvas>
@@ -94,25 +100,58 @@
 
         </div>
 
-        <div class='these-budgets'>
-
         <div class='all-budgets'>
-            {% if food > 0 %}
-            <p class='budget_'>Food-Budget: &nbsp &nbsp &nbsp &nbsp &nbsp  ${{this_dicts.Food}} | ${{food}}</p>
-            {% endif%}
-            {% if clothes > 0%}
-            <p class='budget_'>Clothing-Budget: &nbsp &nbsp ${{this_dicts.Clothing}} | ${{clothes}}</p>
-            {% endif%}
-            {% if transport > 0 %}
-            <p class='budget_'>Transport-Budget: &nbsp ${{this_dicts.Transportation}} | ${{transport}}</p>
-            {% endif%}
-            {% if util > 0 %}
-            <p class='budget_'>Utilities-Budget: &nbsp &nbsp &nbsp &nbsp${{this_dicts.Utilities}} | ${{util}}</p>
-            {% endif %}
-            {% if others > 0 %}
-            <p class='budget_'>Others-Budget :&nbsp &nbsp &nbsp &nbsp ${{this_dicts.Others}} | ${{others}}</p>
-            {% endif%}
+            
+            <table>
+                <a class='settings_link' href="/settings">Settings</a>
+
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Budget</th>
+                        <th>Spent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if food > 0 %}
+                    <tr>
+                        <td>Food</td>
+                        <td>${{this_dicts.Food}}</td>
+                        <td>${{food}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if clothes > 0 %}
+                    <tr>
+                        <td>Clothing</td>
+                        <td>${{this_dicts.Clothing}}</td>
+                        <td>${{clothes}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if transport > 0 %}
+                    <tr>
+                        <td>Transport</td>
+                        <td>${{this_dicts.Transportation}}</td>
+                        <td>${{transport}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if util > 0 %}
+                    <tr>
+                        <td>Utilities</td>
+                        <td>${{this_dicts.Utilities}}</td>
+                        <td>${{util}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if others > 0 %}
+                    <tr>
+                        <td>Others</td>
+                        <td>${{this_dicts.Others}}</td>
+                        <td>${{others}}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
+        
 
         <div class='things'>
 
@@ -125,7 +164,7 @@
                         {% csrf_token %}
                         <input type="hidden" name='action' value='Transaction'>
                         <input class='add_transaction' type="text" placeholder='Retailer' name='retail'>
-                        <input autocomplete='off' class='add_transaction' type="text" placeholder='amount' name='amount'>
+                        <input autocomplete='off' class='add_transaction' type="text" placeholder='$' name='amount'>
                         <select class='add_transaction' name="category">
                             <option value="0">What did you buy?</option>
                             <option value="1">Food</option>
@@ -152,19 +191,18 @@
                         {% csrf_token %}
                         <input type="hidden" name='action' value='Subscription'>
                         <input autocomplete='off' class='add_subsscription' type="text" placeholder='Organization' name='organization'>
-                        <input autocomplete='off'class='add_subsscription' type="text" placeholder='amount' name='amount'>
+                        <input autocomplete='off'class='add_subsscription' type="text" placeholder='$' name='amount'>
                         <button class='add_subsscription' type='submit'>Submit</button>
                     </form>
                     {% for i in subscriptions %}
-                    <li class='jj'><a class='delete_link' href="{% url 'delete_subscription' i.organization %}">{{i.organization}}: ${{i.price}}/Month</a></li>
+                    <li class='jj'>
+                        <a class='delete_link' href="{% url 'delete_subscriptions' i.organization %}">{{i.organization}} - ${{i.price}}/Month</a>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
-
-    <a class='settings' href="/settings">Settings</a>
-
 
     <script> 
         // Pie / Doughnut Chart
@@ -198,7 +236,6 @@
                         text: 'Spending Disparity: {{this_month}}'
                     },
                     legend: {
-                        position: 'bottom'
                     }
                 }
             }
