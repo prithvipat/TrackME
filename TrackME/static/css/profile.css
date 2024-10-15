@@ -1,0 +1,479 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-color)
+}
+
+:root{
+    /* ===== Colors ===== */
+    --body-color: #FFF;
+    --sidebar-color: #E4E9F7;
+    --primary-color: #272829;
+    --primary-color-light: #F6F5FF;
+    --toggle-color: #DDD;
+    --text-color: #707070;
+    /* ====== Transition ====== */
+    --tran-03: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.3s ease;
+    --tran-05: all 0.3s ease;
+}
+
+body{
+    min-height: 100vh;
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+}
+
+::selection{
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+body.dark{
+    --body-color: #18191a;
+    --sidebar-color: #242526;
+    --primary-color: #3a3b3c;
+    --primary-color-light: #3a3b3c;
+    --toggle-color: #fff;
+    --text-color: #ccc;
+}
+/* ===== Sidebar ===== */
+ .sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    padding: 10px 14px;
+    background: var(--sidebar-color);
+    transition: var(--tran-05);
+    z-index: 100;  
+}
+
+.sidebar.close{
+    width: 88px;
+}
+/* ===== Reusable code - Here ===== */
+.sidebar li{
+    height: 50px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+.sidebar header .image,
+.sidebar .icon{
+    min-width: 60px;
+    border-radius: 6px;
+}
+.sidebar .icon{
+    min-width: 60px;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+.sidebar .text,
+.sidebar .icon{
+    color: var(--text-color);
+    transition: var(--tran-03);
+}
+.sidebar .text{
+    font-size: 17px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 1;
+}
+.sidebar.close .text{
+    opacity: 0;
+}
+/* =========================== */
+.sidebar header{
+    position: relative;
+}
+.sidebar header .image-text{
+    display: flex;
+    align-items: center;
+}
+.sidebar header .logo-text{
+    display: flex;
+    flex-direction: column;
+}
+header .image-text .name {
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+}
+header .image-text .profession{
+    font-size: 16px;
+    margin-top: -2px;
+    display: block;
+}
+.sidebar header .image{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sidebar header .image img{
+    width: 40px;
+    border-radius: 6px;
+}
+.sidebar header .toggle{
+    position: absolute;
+    top: 50%;
+    right: -25px;
+    transform: translateY(-50%) rotate(180deg);
+    height: 25px;
+    width: 25px;
+    background-color: var(--primary-color);
+    color: var(--sidebar-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+body.dark .sidebar header .toggle{
+    color: var(--text-color);
+}
+.post.dark {
+    color: rgb(50,50,50);
+}
+
+.sidebar.close .toggle{
+    transform: translateY(-50%) rotate(0deg);
+}
+.sidebar .menu{
+    margin-top: 40px;
+}
+.sidebar li.search-box{
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+.sidebar li.search-box input{
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: 500;
+    transition: var(--tran-05);
+}
+.sidebar li a{
+    list-style: none;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: var(--tran-03);
+}
+.sidebar li a:hover{
+    background-color: var(--primary-color);
+}
+.sidebar li a:hover .icon,
+.sidebar li a:hover .text{
+    color: var(--sidebar-color);
+}
+body.dark .sidebar li a:hover .icon,
+body.dark .sidebar li a:hover .text{
+    color: var(--text-color);
+}
+.sidebar .menu-bar{
+    height: calc(100% - 55px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: scroll;
+}
+.menu-bar::-webkit-scrollbar{
+    display: none;
+}
+.sidebar .menu-bar .mode{
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    position: relative;
+    transition: var(--tran-05);
+}
+.menu-bar .mode .sun-moon{
+    height: 50px;
+    width: 60px;
+}
+.mode .sun-moon i{
+    position: absolute;
+}
+.mode .sun-moon i.sun{
+    opacity: 0;
+}
+body.dark .mode .sun-moon i.sun{
+    opacity: 1;
+}
+body.dark .mode .sun-moon i.moon{
+    opacity: 0;
+}
+.menu-bar .bottom-content .toggle-switch{
+    position: absolute;
+    right: 0;
+    height: 100%;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.toggle-switch .switch{
+    position: relative;
+    height: 22px;
+    width: 40px;
+    border-radius: 25px;
+    background-color: var(--toggle-color);
+    transition: var(--tran-05);
+}
+.switch::before{
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    background-color: var(--sidebar-color);
+    transition: var(--tran-04);
+}
+body.dark .switch::before{
+    left: 20px;
+}
+.home{
+    position: absolute;
+    top: 0;
+    top: 0;
+    left: 250px;
+    height: 100vh;
+    width: calc(100% - 250px);
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+}
+.home .text{
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-color);
+    padding: 12px 60px;
+}
+.sidebar.close ~ .home{
+    left: 78px;
+    height: 100vh;
+    width: calc(100% - 78px);
+}
+body.dark .home .text{
+    color: var(--text-color);
+}
+
+.image.dark {
+    background-color: darkgray;
+}
+
+.all:not(.select-box) {
+    margin-left: 175px; /* Adjust margin according to the sidebar width */
+    padding: 20px;
+    transition: var(--tran-05);
+}
+
+body.dark .all {
+    background-color: var(--body-color);
+}
+
+/* Charts Section */
+.charts {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.pie-chart, .bar-chart-yearly {
+    padding: 20px;
+    background: var(--sidebar-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pie-chart {
+    width: 35%; /* Increase the width to make it larger */
+    padding: 20px;
+    background: var(--sidebar-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative; /* Allows positioning of elements inside */
+}
+
+.bar-chart-yearly {
+    width: 62%;
+    height: 62%;
+}
+
+.select-box {
+    position: absolute; /* Position it relative to the pie chart */
+    top: 10px;
+    right: 10px;
+    margin: 0; /* Remove margin to keep it inside the pie chart box */
+    z-index: 10; /* Ensure it's above the pie chart */
+}
+
+.select-box select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--text-color);
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+    outline: none;
+    transition: var(--tran-03);
+}
+
+.select-box select:hover {
+    border-color: var(--primary-color);
+}
+
+body.dark .select-box select {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+/* Budget Display */
+.all-budgets {
+    padding: 20px;
+    background: var(--sidebar-color);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.budget_ {
+    font-size: 18px;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+/* Transactions and Subscriptions */
+.things {
+    display: flex;
+    justify-content: space-between;
+}
+
+.transactions_made, .subscriptions_made {
+    width: 48%;
+    padding: 20px;
+    background: var(--sidebar-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+ul.hh {
+    list-style-type: none;
+}
+
+ul.hh h2 {
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.transactions_made ul li, .subscriptions_made ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--text-color);
+    color: var(--text-color);
+}
+
+.delete_link {
+    color: grey;
+}
+
+.delete_link:hover {
+    color: red;
+    transition: 250ms ease-in-out;
+}
+
+.transactions_made button, .subscriptions_made button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 20px;
+}
+
+.add_transaction, .add_subsscription {
+    display: none;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--text-color);
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+    outline: none;
+}
+
+#subm_button {
+    background-color: white;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    transition: 200ms ease-in-out;
+    border: solid;
+}
+
+#subm_button:hover {
+    background-color: var(--primary-color);
+    transition: 200ms ease-in-out;
+    color: white;
+    border-color: var(--primary-color);
+}
+
+button[type='submit'] {
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: var(--tran-03);
+}
+
+table {
+    width: 100%; /* Set the width of the table */
+    border-collapse: collapse; /* Collapse borders */
+    margin-bottom: 20px; /* Space below the table */
+    font-family: Arial, sans-serif; /* Change font */
+    border: 1px;
+    border: solid;
+    border-radius: 10px;
+}
+
+th, td {
+    border: 1px solid #ddd; /* Add border to cells */
+    padding: 8px; /* Add padding */
+    text-align: left; /* Align text to the left */
+}
+
+th {
+    background-color: #f2f2f2; /* Light gray background for headers */
+}

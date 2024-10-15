@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+
+    <title>Login</title>
+</head>
+<body>
+
+    <div class='login-entries'>
+        <form action="" method='POST'>
+            {% csrf_token %}
+            <h2>TrackME <small> Your Personal Expense Tracker </small></h2>
+                <div class="group">      
+                <input type="text" name='username' autocomplete="off" required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Email</label>
+            </div>
+            
+            <div class="group">      
+                <input type="password" name='password' required>
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Password</label>
+            </div>
+            <div class='outside'>
+                <button class='submit-btn' type='submit'>Login</button>
+                <a href="/signup">Create an account</a>
+            </div>
+        </form>
+    </div>
+    
+</body>
+</html>

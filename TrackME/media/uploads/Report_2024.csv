@@ -1,0 +1,18 @@
+Transactions  |  $264.50  |  10
+Price,Shop,Date,Category
+24.00,Costco,2024-09-24,Utilities
+12.00,McDonalds,2024-09-26,Food
+23.00,Costco,2024-09-28,Clothing
+24.00,Chick Fil A,2024-10-01,Food
+35.00,Costco,2024-10-02,Food
+25.00,Home Depot,2024-10-04,Utilities
+3.50,Go Train,2024-10-10,Transportation
+32.00,EBGames,2024-10-10,Others
+50.00,Walmart,2024-10-10,Utilities
+36.00,H&M,2024-10-10,Clothing
+
+Subscriptions |  $49.50  |  3
+Subscription,Price
+Netflix,16.50
+Disney+,18.00
+Amazon Prime,15.00

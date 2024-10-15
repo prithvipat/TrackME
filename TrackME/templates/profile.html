@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{username}} Account</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">  
+  
+
+</head>
+<body>
+    <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                <span class="image">
+                    <img src="/media/TrackME.png" alt="">
+                </span>
+                <div class="text logo-text">
+                    <span class="name">TrackME</span>
+                </div>
+            </div>
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+        <div class="menu-bar">
+            <div class="menu">
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="/">
+                            <i class='bx bx-home-alt icon'></i>
+                            <span class="text nav-text">Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/profile">
+                            <i class='bx bx-user icon'></i>
+                            <span class="text nav-text">Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/news">
+                            <i class='bx bx-news icon'></i>
+                            <span class="text nav-text">News</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/settings">
+                            <i class='bx bx-cog icon'></i>
+                            <span class="text nav-text">Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class='bx bx-plus-circle icon'></i>
+                            <span class="text nav-text">Tips</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="bottom-content">
+                <li class="#">
+                    <a href="/logout">
+                        <i class='bx bx-log-out icon'></i>
+                        <span class="text nav-text">Logout</span>
+                    </a>
+                </li>
+                <li class="mode">
+                    <div class="sun-moon">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                    </div>
+                    <span class="mode-text text">Dark mode</span>
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </div>
+        </div>
+    </nav>
+
+    <div class='all'>
+
+        <div class='charts'>
+            <div class='pie-chart' id='container'>
+                <canvas id='pie-chart'></canvas>
+                <div class='select-box'>
+                    <select id='time'>
+                        <option value='month'>Month</option>
+                        <option value='year'>Year</option>
+                    </select>
+                </div>
+            </div>            
+
+            <div class='bar-chart-yearly'>
+                <canvas id='yearly-bar-chart' width=500></canvas>
+            </div>
+
+        </div>
+
+        <div class='all-budgets'>
+            
+            <table>
+                <a class='settings_link' href="/settings">Settings</a>
+
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Budget</th>
+                        <th>Spent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if food > 0 %}
+                    <tr>
+                        <td>Food</td>
+                        <td>${{this_dicts.Food}}</td>
+                        <td>${{food}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if clothes > 0 %}
+                    <tr>
+                        <td>Clothing</td>
+                        <td>${{this_dicts.Clothing}}</td>
+                        <td>${{clothes}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if transport > 0 %}
+                    <tr>
+                        <td>Transport</td>
+                        <td>${{this_dicts.Transportation}}</td>
+                        <td>${{transport}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if util > 0 %}
+                    <tr>
+                        <td>Utilities</td>
+                        <td>${{this_dicts.Utilities}}</td>
+                        <td>${{util}}</td>
+                    </tr>
+                    {% endif %}
+                    {% if others > 0 %}
+                    <tr>
+                        <td>Others</td>
+                        <td>${{this_dicts.Others}}</td>
+                        <td>${{others}}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+
+        <div class='things'>
+
+            <div class='transactions_made'>
+                <ul class = 'hh'>
+                    <h2>Expenses: ${{total_monthly}} </h2>
+                    <button class='plus_button'><i id='add_transaction' class='bx bx-plus'></i></button>
+                    <button class='add_transaction' id='cancel'><i class='bx bx-x'></i></button>
+                    <form action="" method='POST'>
+                        {% csrf_token %}
+                        <input type="hidden" name='action' value='Transaction'>
+                        <input class='add_transaction' type="text" placeholder='Retailer' name='retail'>
+                        <input autocomplete='off' class='add_transaction' type="text" placeholder='$' name='amount'>
+                        <select class='add_transaction' name="category">
+                            <option value="0">What did you buy?</option>
+                            <option value="1">Food</option>
+                            <option value="2">Transportation</option>
+                            <option value="3">Clothing</option>
+                            <option value="4">Utilities</option>
+                            <option value="5">Groceries</option>
+                            <option value="6">Others</option>
+                        </select>
+                        <button id='subm_button' class='add_transaction' type='submit'>Submit</button>
+                    </form>
+                    {% for t in transactions %}
+                    <li class='jj'><a class='delete_link' href="{% url 'delete_transactions' t.transaction_id %}">{{t.retailer}}: ${{t.amount}} - {{t.date}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class='subscriptions_made'>
+                <ul class='hh'>
+                    <h2 class='headers'>Subscriptions: ${{monthly_subs}}</h2>
+                    <button class='plus_button'><i id='add_subsscription' class='bx bx-plus'></i></button>
+                    <button class='add_subsscription' id='cancel2'><i class='bx bx-x'></i></button>
+                    <form action="" method='POST'>
+                        {% csrf_token %}
+                        <input type="hidden" name='action' value='Subscription'>
+                        <input autocomplete='off' class='add_subsscription' type="text" placeholder='Organization' name='organization'>
+                        <input autocomplete='off'class='add_subsscription' type="text" placeholder='$' name='amount'>
+                        <button id='subm_button' class='add_subsscription' type='submit'>Submit</button>
+                    </form>
+                    {% for i in subscriptions %}
+                    <li class='jj'>
+                        <a class='delete_link' href="{% url 'delete_subscriptions' i.organization %}">{{i.organization}} - ${{i.price}}/Month</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script> 
+        // Pie / Doughnut Chart
+        var ctx = document.getElementById('pie-chart').getContext('2d');
+        var monthlyData = [
+            {{ categories.Food }},
+            {{ categories.Transportation }},
+            {{ categories.Clothing }},
+            {{ categories.Utilities }},
+            {{ categories.Groceries }},
+            {{ categories.Others }}
+        ];
+        
+        var config = {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: monthlyData,
+                    backgroundColor: [
+                        '#C40C0C', '#40A578', '#4B70F5', '#9BCF53', '#F2AFEF', '#F99417'
+                    ],
+                    label: 'Expenses'
+                }],
+                labels: ['Food', 'Transportation', 'Clothing', 'Utilities', 'Groceries', 'Others']
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Spending Disparity: {{this_month}}'
+                    },
+                    legend: {
+                    }
+                }
+            }
+        };
+    
+        var pieChart = new Chart(ctx, config);
+    
+        // Dropdown menu code to change pie chart into yearly distribution or monthly
+        const change = document.getElementById('time');
+        change.addEventListener('change', function() {
+            if (change.value === 'year') { // Yearly Dataset
+                pieChart.data.datasets[0].data = [
+                    {{ percentage_yearly.Food }},
+                    {{ percentage_yearly.Transportation }},
+                    {{ percentage_yearly.Clothing }},
+                    {{ percentage_yearly.Utilities }},
+                    {{ percentage_yearly.Groceries }},
+                    {{ percentage_yearly.Others }},
+                ];
+                pieChart.options.plugins.title.text = 'Spending Disparity: {{this_year}}';
+            } 
+            
+            else { // Monthly Dataset
+                pieChart.data.datasets[0].data = [
+                    {{ categories.Food }},
+                    {{ categories.Transportation }},
+                    {{ categories.Clothing }},
+                    {{ categories.Utilities }},
+                    {{ categories.Groceries }},
+                    {{ categories.Others }},
+                ];
+                pieChart.options.plugins.title.text = 'Spending Disparity: {{this_month}} {{ this_year }}';
+            }
+
+            pieChart.update();
+        });
+
+    </script>
+    
+    <script> // Bar Chart
+        var ctxYearly = document.getElementById('yearly-bar-chart').getContext('2d');
+        
+        var yearlyData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: '{{year}} Spending',
+                data: [
+                    {{ bar_graph_data.Jan }},
+                    {{ bar_graph_data.Feb }},
+                    {{ bar_graph_data.Mar }},
+                    {{ bar_graph_data.Apr }},
+                    {{ bar_graph_data.May }},
+                    {{ bar_graph_data.Jun }},
+                    {{ bar_graph_data.Jul }},
+                    {{ bar_graph_data.Aug }},
+                    {{ bar_graph_data.Sept }},
+                    {{ bar_graph_data.Oct }},
+                    {{ bar_graph_data.Nov }},
+                    {{ bar_graph_data.Dec }}
+                ],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        };
+    
+        var configYearly = {
+            type: 'bar',
+            data: yearlyData,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    title: {
+                        display:true,
+                        text: "Yearly Spending"
+                    }
+                }
+            }
+        };
+    
+        new Chart(ctxYearly, configYearly);
+    </script>
+<script>
+
+    // Sidebar toggle and dark mode logic
+    const body = document.querySelector('body'),
+    sidebar = body.querySelector('nav'),
+    toggle = body.querySelector(".toggle"),
+    modeSwitch = body.querySelector(".toggle-switch"),
+    modeText = body.querySelector(".mode-text");
+
+    toggle.addEventListener("click", () => {
+        sidebar.classList.toggle("close");
+    });
+
+    searchBtn.addEventListener("click", () => {
+        sidebar.classList.remove("close");
+    });
+
+    // Check for saved theme preference on page load
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.classList.add(savedTheme);
+
+            if (savedTheme === 'dark') {
+                modeText.innerText = "Light mode";
+            } 
+            else {
+                modeText.innerText = "Dark mode";
+            }
+        }
+    });
+
+    modeSwitch.addEventListener("click", () => {
+        if (document.body.classList.contains("dark")) {
+            document.body.classList.remove("dark");
+            localStorage.setItem('theme', '');
+            modeText.innerText = "Dark mode";
+        } 
+        else {
+            document.body.classList.add("dark");
+            localStorage.setItem('theme', 'dark');
+            modeText.innerText = "Light mode";
+        }
+    });
+</script>
+<script>
+// Transaction form toggle
+    let transaction = document.getElementById('add_transaction');
+    let elementArray = document.getElementsByClassName('add_transaction');
+    let cancelbtn = document.getElementById('cancel');
+
+    transaction.addEventListener('click', () => {
+        for (let i = 0; i < elementArray.length; i++) {
+            elementArray[i].style.display = 'inline-block';
+            transaction.style.display = 'none'
+        }
+    });
+
+    cancelbtn.addEventListener('click', () => {
+        for (let i = 0; i <elementArray.length; i++) {
+            elementArray[i].style.display = 'none';
+            transaction.style.display = 'inline-block'
+        }
+    });
+
+    let subscription = document.getElementById('add_subsscription');
+    let elementArray2 = document.getElementsByClassName('add_subsscription');
+    let cancelbtn2 = document.getElementById('cancel2');
+
+    subscription.addEventListener('click', () => {
+        for (let i = 0; i < elementArray2.length; i++) {
+            elementArray2[i].style.display = 'inline-block';
+            subscription.style.display = 'none'
+        }
+    });
+
+    cancelbtn2.addEventListener('click', () => {
+        for (let i = 0; i<elementArray2.length; i++) {
+            elementArray2[i].style.display = 'none';
+            subscription.style.display = 'inline-block'
+
+        }
+    });
+
+</script>
+</body>
+</html>

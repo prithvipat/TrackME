@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="{% static 'css/settings.css' %}">    
+</head>
+<body>
+
+    <a href="/profile">Profile</a>
+
+    <form action="" method='POST'>
+        {% csrf_token %}
+        <div class='coolinput'>
+            <input type="hidden" name='action' value='budgets'>
+            <label for="food" class='text'>Food:</label>
+            <input autocomplete="off" name='food' id='budgets-input' type="integer" placeholder={{food_budget}} class='input'>
+            
+            <label for="clothes" class='text'>Clothing:</label>
+            <input autocomplete="off" class='input' id='budgets-input2' type="integer" name='clothes' placeholder={{clothing_budget}}>
+
+            <label for="util" class='text'>Utilities:</label>
+            <input autocomplete="off" class='input' id='budgets-input3' type="integer" name ='util' placeholder={{utilities_budget}}>
+
+            <label for="transport" class='text'>Transportation:</label>
+            <input autocomplete="off" class='input' id='budgets-input4' type="integer" name ='transport' placeholder={{transport_budget}}>
+
+            <label for="others" class='text'>Clothing:</label>
+            <input autocomplete="off" class='input' id='budgets-input5' type="integer" name='others' placeholder={{others_budget}}>
+        </div>
+
+        <div class='money'>
+
+            <input type="text" name='cashflow'>
+            <input type="text" name='pocket'>
+
+        </div>
+
+        <button id='budgets-btn' class='budgets-btn' type='submit'>Update</button>
+    </form>
+
+    <a href="/delete">Delete Account</a>
+
+    <script> // Functonality --> Shows the button if the user changes anything
+
+        let elementArray = document.querySelectorAll("input");
+        let btn = document.getElementById('budgets-btn')
+        elementArray.forEach(function(elem) {
+            elem.addEventListener('input', function() {
+                btn.style.display = 'inline-block';
+            });
+        });
+
+    </script>
+    
+</body>
+</html>
