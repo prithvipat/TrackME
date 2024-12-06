@@ -11,7 +11,18 @@ CATEGORY_CHOICES = [
     ('Clothing', 'Clothing'),
     ('Utilities', 'Utilities'),
     ('Groceries', 'Groceries'),
-    ('Others', 'Others')
+    ('Others', 'Others'),
+    ('Income', 'Income')
+]
+
+INCOME_EXPENSE = [
+    ('Expense', 'Expense'),
+    ('Income', 'Income')
+]
+
+PAYMENT = [
+    ('Weekly', 'Weekly'),
+    ('Bi-Weekly', 'Bi-Weekly')
 ]
 
 # Create your models here.
@@ -37,13 +48,8 @@ class Transactions(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True)
     retailer = models.CharField(max_length=100, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    expense_type = models.CharField(max_length=10, choices=INCOME_EXPENSE)
     # notes = models.TextField(max_length=100, blank=True)
-
-#class Income(models.Model):
-    #profile = models.CharField(max_length=100)
-    #income = models.DecimalField(max_digits=12, decimal_places=2)
-    #mainIncome = models.BooleanField() True for Main Income
-
 
 class Subscriptions(models.Model):
     profile = models.CharField(max_length=100)
@@ -55,4 +61,3 @@ class CSVFiles(models.Model):
     profile = models.CharField(max_length=100)
     file = models.FileField(upload_to='uploads/')
     year = models.IntegerField(default=int(date.today().year))
-    
