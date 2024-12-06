@@ -173,11 +173,17 @@
                             <option value="4">Utilities</option>
                             <option value="5">Groceries</option>
                             <option value="6">Others</option>
+                            <option value="7">Income</option>
                         </select>
                         <button id='subm_button' class='add_transaction' type='submit'>Submit</button>
                     </form>
                     {% for t in transactions %}
-                    <li class='jj'><a class='delete_link' href="{% url 'delete_transactions' t.transaction_id %}">{{t.retailer}}: ${{t.amount}} - {{t.date}}</a></li>
+                    {% if t.expense_type == 'Income'%}
+                    <li class='jj'><a class='delete_link' id='income' href="{% url 'delete_transactions' t.transaction_id %}">{{t.retailer}}: ${{t.amount}} - {{t.date}}</a></li>
+
+                    {% elif t.expense_type == 'Expense'%}
+                    <li class='jj' ><a class='delete_link' id='expense' href="{% url 'delete_transactions' t.transaction_id %}">{{t.retailer}}: ${{t.amount}} - {{t.date}}</a></li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
             </div>
@@ -196,13 +202,14 @@
                     </form>
                     {% for i in subscriptions %}
                     <li class='jj'>
-                        <a class='delete_link' href="{% url 'delete_subscriptions' i.organization %}">{{i.organization}} - ${{i.price}}/Month</a>
+                        <a class='delete_link' id='expense' href="{% url 'delete_subscriptions' i.organization %}">{{i.organization}} - ${{i.price}}/Month</a>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
+
 
     <script> 
         // Pie / Doughnut Chart
@@ -323,51 +330,6 @@
     
         new Chart(ctxYearly, configYearly);
     </script>
-<script>
-
-    // Sidebar toggle and dark mode logic
-    const body = document.querySelector('body'),
-    sidebar = body.querySelector('nav'),
-    toggle = body.querySelector(".toggle"),
-    modeSwitch = body.querySelector(".toggle-switch"),
-    modeText = body.querySelector(".mode-text");
-
-    toggle.addEventListener("click", () => {
-        sidebar.classList.toggle("close");
-    });
-
-    searchBtn.addEventListener("click", () => {
-        sidebar.classList.remove("close");
-    });
-
-    // Check for saved theme preference on page load
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            document.body.classList.add(savedTheme);
-
-            if (savedTheme === 'dark') {
-                modeText.innerText = "Light mode";
-            } 
-            else {
-                modeText.innerText = "Dark mode";
-            }
-        }
-    });
-
-    modeSwitch.addEventListener("click", () => {
-        if (document.body.classList.contains("dark")) {
-            document.body.classList.remove("dark");
-            localStorage.setItem('theme', '');
-            modeText.innerText = "Dark mode";
-        } 
-        else {
-            document.body.classList.add("dark");
-            localStorage.setItem('theme', 'dark');
-            modeText.innerText = "Light mode";
-        }
-    });
-</script>
 <script>
 // Transaction form toggle
     let transaction = document.getElementById('add_transaction');
