@@ -696,7 +696,7 @@ def news(request): # News API and page
     page = random.randint(1, 5) # Total of 5 pages
     link = "https://newsapi.org/v2/everything?"
     params = {
-        'apiKey': 'b2b40e6d388a4263bf8a15ad481c724e',
+        'apiKey': 'API KEY',
         'q': 'saving money',
         'page': page
     }
