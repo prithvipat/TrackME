@@ -387,6 +387,7 @@ body.dark .select-box select {
     background: var(--sidebar-color);
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
 }
 
 ul.hh {
@@ -402,17 +403,19 @@ ul.hh h2 {
     padding: 10px 0;
     border-bottom: 1px solid var(--text-color);
     color: var(--text-color);
+
 }
 
-.delete_link {
-    color: grey;
-}
 
-.delete_link:hover {
+#income:hover {
     color: red;
     transition: 250ms ease-in-out;
 }
 
+#expense:hover {
+    color: red;
+    transition: 250ms ease-in-out;
+}
 .transactions_made button, .subscriptions_made button {
     background: none;
     border: none;
@@ -476,4 +479,12 @@ th, td {
 
 th {
     background-color: #f2f2f2; /* Light gray background for headers */
+}
+
+#income {
+    color: green;
+}
+
+#expense {
+    color: grey;
 }
