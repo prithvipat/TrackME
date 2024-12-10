@@ -23,7 +23,6 @@
                     <span class="name">TrackME</span>
                 </div>
             </div>
-            <i class='bx bx-chevron-right toggle'></i>
         </header>
         <div class="menu-bar">
             <div class="menu">
@@ -32,12 +31,6 @@
                         <a href="/">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Home</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/profile">
-                            <i class='bx bx-user icon'></i>
-                            <span class="text nav-text">Profile</span>
                         </a>
                     </li>
                     <li class="nav-link">
@@ -66,16 +59,6 @@
                         <i class='bx bx-log-out icon'></i>
                         <span class="text nav-text">Logout</span>
                     </a>
-                </li>
-                <li class="mode">
-                    <div class="sun-moon">
-                        <i class='bx bx-moon icon moon'></i>
-                        <i class='bx bx-sun icon sun'></i>
-                    </div>
-                    <span class="mode-text text">Dark mode</span>
-                    <div class="toggle-switch">
-                        <span class="switch"></span>
-                    </div>
                 </li>
             </div>
         </div>
@@ -202,7 +185,7 @@
                     </form>
                     {% for i in subscriptions %}
                     <li class='jj'>
-                        <a class='delete_link' id='expense' href="{% url 'delete_subscriptions' i.organization %}">{{i.organization}} - ${{i.price}}/Month</a>
+                        <a class='delete_link' id='expense' href="{% url 'delete_subscriptions' i.organization %}">{{i.organization}}: ${{i.price}}/Month</a>
                     </li>
                     {% endfor %}
                 </ul>
