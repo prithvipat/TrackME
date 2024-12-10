@@ -187,7 +187,14 @@ def get_budgets(profile, user_transactions):
     return (food, util, others, clothes, transport, dicts)
 
 def store_distribution(transactions): # WIP
-    pass
+
+    n = {}
+    
+    for i in transactions:
+        if i.expense_type != 'Income':
+            n[i.expense_type] += 1
+        
+            
 
 def check_yearly_spending(all_transaction, all_subscriptions, monthly_spend): #Checks yearly spending on transactions + subscriptions + combined
 
@@ -330,14 +337,15 @@ def index(request): # Main page
     
     else:
         for i in user_transactions:
-            monthly += i.amount
+            if i.expense_type == 'Expense':
+                monthly += i.amount
 
         dicts = pie_graph_data(user_transactions)
         latest = user_transactions[0]
         if len(user_transactions) > 1:
             second = user_transactions[1]
 
-    return render(request, 'index.html', {'profile': profile, 'categories': dicts, 'user':user_object, 'latest':latest, 'second':second, 'csv_file':new_csv, 'new_year':new_year, 'monthly':monthly})
+    return render(request, 'index.html', {'profile': profile, 'categories': dicts, 'user':user_object, 'latest':latest, 'second':second, 'csv_file':new_csv, 'new_year':new_year, 'monthly': monthly})
 
 @login_required(login_url='login')
 def settings(request): # Settings page - update budgets, cashflow, etc.
@@ -413,7 +421,7 @@ def make_transaction(request): # Creating Transaction or Subscription
             retailer = request.POST['retailer']
 
             if category == 'Income':
-                new_transaction = Transactions.objects.create(profile=profile, amount=amount, expense_type=category)
+                new_transaction = Transactions.objects.create(profile=profile, retailer=retailer, amount=amount, expense_type=category)
                 new_transaction.save()
             
             else:
@@ -495,7 +503,7 @@ def check_transactions(request): # Profile
                 new_transaction = Transactions.objects.create(profile=profile, category=category, amount=amount, retailer=retailer, expense_type='Expense')
                 new_transaction.save()
 
-            return redirect('profile')
+            return redirect('index')
     
         if action == 'Subscription': # To add a Subscription
             profile = request.user.username
@@ -504,12 +512,12 @@ def check_transactions(request): # Profile
 
             if Subscriptions.objects.filter(profile=profile, organization=organization).exists():
                 messages.info(request,f'You already have a {organization} subscription')
-                return redirect('profile')
+                return redirect('index')
             
             else:
                 new_subscription = Subscriptions.objects.create(profile=profile, price=amount, organization=organization)
                 new_subscription.save()
-                return redirect('profile')
+                return redirect('index')
 
     return render(request, 'profile.html', context)
 
@@ -636,7 +644,7 @@ def playground(request): # Page for experimentation
             retailer = request.POST.get('retail')
             new_transaction = Transactions.objects.create(profile=profile, category=category, amount=amount, retailer=retailer)
             new_transaction.save()
-            return redirect('profile')
+            return redirect('index')
         
         if action == 'Subscription': # To add a Subscription
             profile = request.user.username
@@ -645,25 +653,25 @@ def playground(request): # Page for experimentation
 
             if Subscriptions.objects.filter(profile=profile, organization=organization).exists():
                 messages.info(request,f'You already have a {organization} subscription')
-                return redirect('profile')
+                return redirect('index')
             
             else:
                 new_subscription = Subscriptions.objects.create(profile=profile, price=amount, organization=organization)
                 new_subscription.save()
-                return redirect('profile')
+                return redirect('index')
     return render(request, 'playground.html', context)
 
 def delete_transactions(request, event_id): # Delete Transaction
     event = Transactions.objects.get(transaction_id=event_id)
     event.delete()
-    return redirect('profile')
+    return redirect('index')
 
 login_required(login_url=login)
 def delete_subscriptions(request, event_id): #Delete Subscription
     profile = request.user.username
     event = Subscriptions.objects.filter(profile=profile, organization=event_id)
     event.delete()
-    return redirect('profile')
+    return redirect('index')
 
 login_required(login_url=login)
 def delete_profile(request): # Delete Profile
@@ -697,7 +705,7 @@ def news(request): # News API and page
     link = "https://newsapi.org/v2/everything?"
     params = {
         'apiKey': 'API KEY',
-        'q': 'saving money',
+        'q': 'saving money on expenses',
         'page': page
     }
 
