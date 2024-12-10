@@ -22,7 +22,6 @@
                     <span class="name">TrackME</span>
                 </div>
             </div>
-            <i class='bx bx-chevron-right toggle'></i>
         </header>
         <div class="menu-bar">
             <div class="menu">
@@ -31,12 +30,6 @@
                         <a href="/">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Home</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="/profile">
-                            <i class='bx bx-user icon'></i>
-                            <span class="text nav-text">Profile</span>
                         </a>
                     </li>
                     <li class="nav-link">
@@ -66,16 +59,7 @@
                         <span class="text nav-text">Logout</span>
                     </a>
                 </li>
-                <li class="mode">
-                    <div class="sun-moon">
-                        <i class='bx bx-moon icon moon'></i>
-                        <i class='bx bx-sun icon sun'></i>
-                    </div>
-                    <span class="mode-text text">Dark mode</span>
-                    <div class="toggle-switch">
-                        <span class="switch"></span>
-                    </div>
-                </li>
+
             </div>
         </div>
     </nav>
@@ -94,49 +78,6 @@
     
     <a class='top-link' href="#top"><i class='bx bx-up-arrow'></i></a>
 
-    <script>
-        const body = document.querySelector('body'),
-              sidebar = body.querySelector('nav'),
-              toggle = body.querySelector(".toggle"),
-              modeSwitch = body.querySelector(".toggle-switch"),
-              modeText = body.querySelector(".mode-text");
-
-        toggle.addEventListener("click", () => {
-            sidebar.classList.toggle("close");
-        });
-
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.remove("close");
-        });
-
-        // Check for saved theme preference on page load
-        
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                document.body.classList.add(savedTheme);
-                if (savedTheme === 'dark') {
-                    modeText.innerText = "Light mode";
-                } else {
-                    modeText.innerText = "Dark mode";
-                }
-            }
-        });
-        
-
-        modeSwitch.addEventListener("click", () => {
-            if (document.body.classList.contains("dark")) {
-                document.body.classList.remove("dark");
-                localStorage.setItem('theme', '');
-                modeText.innerText = "Dark mode";
-            } else {
-                document.body.classList.add("dark");
-                localStorage.setItem('theme', 'dark');
-                modeText.innerText = "Light mode";
-            }
-        });
-    
-    </script>
     
 
 </body>
