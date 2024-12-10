@@ -30,7 +30,6 @@ class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     id_user = models.IntegerField()
     balance = models.DecimalField(blank=True, default=0, decimal_places=2, max_digits=10)
-    cash_flow = models.DecimalField(blank=True,decimal_places=2, max_digits=10, default=0)
     food_budget = models.DecimalField(blank=True, decimal_places=2, max_digits=10, default=0)
     transport_budget = models.DecimalField(blank=True, decimal_places=2, max_digits=10, default=0)
     clothing_budget = models.DecimalField(blank=True, decimal_places=2, max_digits=10, default=0)
